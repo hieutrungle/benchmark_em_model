@@ -1,74 +1,104 @@
-import os
-import shutil
-import PIL.Image
 import numpy as np
 import matplotlib.pyplot as plt
+import torch
+import argparse
+import logger
+import os
+import json
+import shutil
+
+DEVICE = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
+NUM_GPUS = len([torch.cuda.device(i) for i in range(torch.cuda.device_count())])
+
+# DEVICE = torch.device(str(os.environ.get("DEVICE", "cpu")))
+# NUM_GPUS = int(os.environ.get("NUM_GPUS", 0))
 
 
-def mkdir_with_clear(path):
-    if os.path.exists(path):
-        shutil.rmtree(path)
-    os.mkdir(path)
+def add_dict_to_argparser(parser, default_dict):
+    for k, v in default_dict.items():
+        v_type = type(v)
+        if v is None:
+            v_type = str
+        elif isinstance(v, bool):
+            v_type = str2bool
+        parser.add_argument(f"--{k}", default=v, type=v_type)
 
 
-def mkdir_if_not_exists(path):
-    if not os.path.exists(path):
-        os.mkdir(path)
+def args_to_dict(args, keys):
+    return {k: getattr(args, k) for k in keys}
 
 
-def display_sample(sample, i, title=""):
-    image_processed = sample.cpu().permute(0, 2, 3, 1)
-    image_processed = (image_processed + 1.0) * 127.5
-    image_processed = image_processed.numpy().astype(np.uint8)
+def str2bool(v):
+    """
+    https://stackoverflow.com/questions/15008758/parsing-boolean-values-with-argparse
+    """
+    if isinstance(v, bool):
+        return v
+    if v.lower() in ("yes", "true", "t", "y", "1"):
+        return True
+    elif v.lower() in ("no", "false", "f", "n", "0"):
+        return False
+    else:
+        raise argparse.ArgumentTypeError("boolean value expected")
 
-    image_pil = PIL.Image.fromarray(image_processed[0])
-    # plt.figure(figsize=(10, 10))
-    image_dir = "./images"
-    mkdir_if_not_exists(image_dir)
-    image_pil.save(image_dir / f"{title}_image_at_step_{i}.png")
-    # plt.close()
 
-
-def save_images(
-    images,
-    num_prompt,
-    num_images_per_prompt,
-    n_ipu,
-    inference_replication_factor,
-    prompt,
-):
-    num_images = len(images)
-
-    fig, axes = plt.subplots(num_prompt, num_images_per_prompt, constrained_layout=True)
-    # fig.set_size_inches(9, 9)
-
-    for i, image in enumerate(images):
-        if num_prompt == 1 and num_images_per_prompt == 1:
-            ax = axes
-        elif num_prompt == 1:
-            ax = axes[i % num_images_per_prompt]
+def log_args_and_device_info(args):
+    """Logs arguments to the console."""
+    logger.log(f"{'*'*23} {'train'.upper()} BEGIN {'*'*23}")
+    message = "\n"
+    for k, v in args.__dict__.items():
+        if isinstance(v, str):
+            message += f"{k} = '{v}'\n"
         else:
-            ax = axes[i // num_images_per_prompt, i % num_images_per_prompt]
-        ax.imshow(image)
-        ax.axis("off")
-        ax.set_xticks([])
-        ax.set_yticks([])
-        ax.set_xticklabels([])
-        ax.set_yticklabels([])
-        ax.set_aspect("equal")
+            message += f"{k} = {v}\n"
 
-    fig.suptitle(f"prompt: {prompt}")
-    # fig.tight_layout()
-    # fig.subplots_adjust(wspace=0, hspace=0)
+    # Additional Info when using cuda
+    if DEVICE.type == "cuda":
+        message += f"\nUsing device: {str(DEVICE)}\n"
+        for i in range(NUM_GPUS):
+            mem_allot = round(torch.cuda.memory_allocated(i) / 1024**3, 1)
+            mem_cached = round(torch.cuda.memory_reserved(i) / 1024**3, 1)
+            message += f"{str(torch.cuda.get_device_name(i))}\n"
+            message += "Memory Usage: " + "\n"
+            message += "Allocated: " + str(mem_allot) + " GB" + "\n"
+            message += "Cached: " + str(mem_cached) + " GB" + "\n"
+    logger.log(f"{message}")
+    logger.log(f"Pytorch version: {torch.__version__}\n")
 
-    current_dir = os.path.dirname(os.path.realpath(__file__))
-    image_dir = os.path.join(current_dir, "images")
-    mkdir_if_not_exists(image_dir)
-    fig.savefig(
-        os.path.join(
-            image_dir,
-            f"n_ipu_{n_ipu}_num_prompt_{num_prompt}_num_images_per_prompt_{num_images_per_prompt}_inference_replication_factor_{inference_replication_factor}.png",
-        ),
-        dpi=150,
-    )
-    plt.close()
+
+class NpEncoder(json.JSONEncoder):
+    # json format for saving numpy array
+    def default(self, obj):
+        if isinstance(obj, np.integer):
+            return int(obj)
+        if isinstance(obj, np.floating):
+            return float(obj)
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return json.JSONEncoder.default(self, obj)
+
+
+def mkdir_storage(model_dir, resume={}):
+    if os.path.exists(os.path.join(model_dir, "summaries")):
+        if len(resume) == 0:
+            # val = input("The model directory %s exists. Overwrite? (y/n) " % model_dir)
+            # print()
+            # if val == 'y':
+            if os.path.exists(os.path.join(model_dir, "summaries")):
+                shutil.rmtree(os.path.join(model_dir, "summaries"))
+            if os.path.exists(os.path.join(model_dir, "checkpoints")):
+                shutil.rmtree(os.path.join(model_dir, "checkpoints"))
+
+    os.makedirs(model_dir, exist_ok=True)
+
+    summaries_dir = os.path.join(model_dir, "summaries")
+    mkdir_if_not_exist(summaries_dir)
+
+    checkpoints_dir = os.path.join(model_dir, "checkpoints")
+    mkdir_if_not_exist(checkpoints_dir)
+    return summaries_dir, checkpoints_dir
+
+
+def mkdir_if_not_exist(path):
+    if not os.path.exists(path):
+        os.makedirs(path)
