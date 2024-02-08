@@ -2,13 +2,7 @@ import os
 
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
-import numpy as np
 import torch
-import time
-import shutil
-from pathlib import Path
-import glob
-import errno
 import argparse
 import utils
 import logger
@@ -17,13 +11,7 @@ from torchinfo import summary
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 import os
-import sys
-import train_module
 import data_io
-import matplotlib.pyplot as plt
-
-# DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-# NUM_GPUS = len([torch.cuda.device(i) for i in range(torch.cuda.device_count())])
 
 DEVICE = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
 if DEVICE.type != "cpu":
@@ -67,7 +55,9 @@ def main():
         ),
         row_settings=("depth", "ascii_only"),
     )
-    model = model.to(torch.device(DEVICE))  # put model to device (GPU)
+    if DEVICE.type == "cuda" and NUM_GPUS > 1:
+        model = model.to("cuda")
+    # model = model.to("cuda")  # put model to device (GPU)
 
     # Data Preparation
     # normalize = transforms.Normalize(
@@ -77,8 +67,7 @@ def main():
     train_ds = data_io.ImageCurrentDataset(
         train_dir,
         transform=transforms.Compose(
-            [   
-                
+            [
                 transforms.RandomHorizontalFlip(),
                 transforms.RandomVerticalFlip(),
                 transforms.ToTensor(),
@@ -108,7 +97,6 @@ def main():
         test_dir,
         transform=transforms.Compose(
             [
-                
                 transforms.ToTensor(),
             ]
         ),
@@ -181,20 +169,20 @@ def main():
     # )
 
     # Train & Evaluate
+    exit()
     train_module.train(model, train_loader, test_loader, args)
 
 
 def create_argparser():
     """Parses command line arguments."""
     defaults = dict(
-        data_dir="../Data4CNN/56/train",
-        test_dir="../Data4CNN/56/test",
-        model_path="./saved_models/56_256",
+        data_dir="/home/hieule/research/benchmark_em_model/data/061/train",
+        test_dir="/home/hieule/research/benchmark_em_model/data/061/test",
+        model_path="./saved_models/061",
         verbose=True,
         batch_size=64,
         epochs=100,
         # lr=1e-4,
-        
         lr=0.001,
         warm_up_portion=0.2,
         # weight_decay=1e-6,

@@ -1,4 +1,3 @@
-import torch
 import os
 import os.path
 from typing import Any, Callable, cast, Dict, List, Optional, Tuple, Union
@@ -8,9 +7,10 @@ from torchvision import transforms
 import numpy as np
 import glob
 from torchvision.datasets.vision import VisionDataset
-from skimage.io.collection import alphanumeric_key
+import utils
 import pandas as pd
-from sklearn import preprocessing
+
+# from sklearn import preprocessing
 
 
 def has_file_allowed_extension(
@@ -378,9 +378,8 @@ class ImageCurrentDataset(data.Dataset):
         self.target_transform = target_transform
         self.loader = loader
         self.image_dir = os.path.join(self.root, "images")
-        self.image_files = sorted(
-            glob.glob(os.path.join(self.image_dir, "*png")), key=alphanumeric_key
-        )
+        self.image_files = glob.glob(os.path.join(self.image_dir, "*png"))
+        utils.sort_nicely(self.image_files)
 
         current_file = os.path.join(self.root, "current.xlsx")
         self.output = pd.read_excel(current_file, header=None)

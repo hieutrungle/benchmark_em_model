@@ -6,6 +6,8 @@ import logger
 import os
 import json
 import shutil
+from typing import List, Union
+import re
 
 DEVICE = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
 NUM_GPUS = len([torch.cuda.device(i) for i in range(torch.cuda.device_count())])
@@ -102,3 +104,25 @@ def mkdir_storage(model_dir, resume={}):
 def mkdir_if_not_exist(path):
     if not os.path.exists(path):
         os.makedirs(path)
+
+
+# Sorting
+def tryint(s: str) -> int:
+    try:
+        return int(s)
+    except:
+        return s
+
+
+# Sorting
+def alphanum_key(s: str) -> List[Union[str, int]]:
+    """Turn a string into a list of string and number chunks.
+    "z23a" -> ["z", 23, "a"]
+    """
+    return [tryint(c) for c in re.split("([0-9]+)", s)]
+
+
+# Sorting
+def sort_nicely(l: List[str]):
+    """Sort the given list in the way that humans expect."""
+    l.sort(key=alphanum_key)
