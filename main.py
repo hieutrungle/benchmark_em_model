@@ -16,9 +16,9 @@ import torch.optim as optim
 import training
 from torch.utils.data.dataloader import default_collate
 
-DEVICE = torch.DEVICE("cuda:0" if torch.cuda.is_available() else "cpu")
+DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 if DEVICE.type != "cpu":
-    NUM_GPUS = len([torch.cuda.DEVICE(i) for i in range(torch.cuda.DEVICE_count())])
+    NUM_GPUS = len([torch.cuda.device(i) for i in range(torch.cuda.device_count())])
     # NUM_GPUS = 1
 else:
     NUM_GPUS = 0
@@ -30,7 +30,7 @@ def main():
     torch.cuda.empty_cache()
     args = create_argparser().parse_args()
     logger.configure(dir="./logs")
-    utils.log_args_and_DEVICE_info(args)
+    utils.log_args_and_device_info(args)
 
     # Model Initialization
     # model = efficientnet.efficientnet_model(num_classes=10)
@@ -59,10 +59,12 @@ def main():
         row_settings=("depth", "ascii_only"),
     )
     if DEVICE.type == "cuda" and NUM_GPUS > 1:
+        device = torch.device("cuda")
         model = model.to("cuda")
     else:
+        device = torch.device("cpu")
         model = model.to("cpu")
-    # model = model.to("cuda")  # put model to DEVICE (GPU)
+    # model = model.to("cuda")  # put model to device (GPU)
 
     # Data Preparation
     # normalize = transforms.Normalize(
@@ -86,7 +88,7 @@ def main():
         num_workers=4 * NUM_GPUS,
         pin_memory=True,
         drop_last=True,
-        collate_fn=lambda x: tuple(x_.to(DEVICE) for x_ in default_collate(x)),
+        collate_fn=lambda x: tuple(x_.to(device) for x_ in default_collate(x)),
     )
 
     test_dir = args.test_dir
@@ -105,7 +107,7 @@ def main():
         num_workers=4 * NUM_GPUS,
         pin_memory=True,
         drop_last=False,
-        collate_fn=lambda x: tuple(x_.to(DEVICE) for x_ in default_collate(x)),
+        collate_fn=lambda x: tuple(x_.to(device) for x_ in default_collate(x)),
     )
 
     # sys.exit()

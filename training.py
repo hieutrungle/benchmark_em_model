@@ -30,7 +30,7 @@ class TorchTrainer:
         writer = SummaryWriter("logs/trainer_{}".format(self.timestamp))
         self.writer = writer
 
-    @timer.Timer(logger=logger.log)
+    @timer.Timer(logger_fn=logger.log)
     def train_one_epoch(self, epoch_index):
         running_loss = 0.0
         last_loss = 0.0
