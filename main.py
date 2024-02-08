@@ -58,7 +58,7 @@ def main():
         ),
         row_settings=("depth", "ascii_only"),
     )
-    if DEVICE.type == "cuda" and NUM_GPUS > 1:
+    if DEVICE.type == "cuda" and NUM_GPUS > 0:
         device = torch.device("cuda")
         model = model.to("cuda")
     else:
