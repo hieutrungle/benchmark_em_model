@@ -21,3 +21,4 @@ sigmap.egg-info/
 *test*
 *stats_*
 *job*
+saved_models/

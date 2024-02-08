@@ -5,7 +5,6 @@ import data_io
 import torchvision.transforms as transforms
 import numpy as np
 import pandas as pd
-from sklearn import preprocessing
 import time
 
 DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -65,7 +64,7 @@ def prediction(conductivities):
     #         all_pred_currents[i] = 0
 
     # scaler = preprocessing.MinMaxScaler()
-    # scaler = scaler.fit(all_pred_currents) 
+    # scaler = scaler.fit(all_pred_currents)
     # all_pred_currents =  scaler.inverse_transform(all_pred_currents)
     # all_pred_currents = all_pred_currents*13.61189 + 2.474435
 
@@ -73,9 +72,9 @@ def prediction(conductivities):
     #  print(conductivity, pred)
 
     print(f"all_pred_currents: {all_pred_currents.shape}")
-    # all_pred_resistance = voltage/all_pred_currents 
+    # all_pred_resistance = voltage/all_pred_currents
     # all_pred_resistance = all_pred_resistance * (1.0 / np.array(conductivities))
-    all_pred_currents = all_pred_currents*np.array(conductivities)
+    all_pred_currents = all_pred_currents * np.array(conductivities)
     print(all_pred_currents)
     # to excel
     df = pd.DataFrame(all_pred_currents)

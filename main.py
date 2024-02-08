@@ -12,6 +12,9 @@ import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 import os
 import data_io
+import torch.optim as optim
+import training
+from torch.utils.data.dataloader import default_collate
 
 DEVICE = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
 if DEVICE.type != "cpu":
@@ -56,7 +59,11 @@ def main():
         row_settings=("depth", "ascii_only"),
     )
     if DEVICE.type == "cuda" and NUM_GPUS > 1:
+        device = torch.device("cuda")
         model = model.to("cuda")
+    else:
+        device = torch.device("cpu")
+        model = model.to("cpu")
     # model = model.to("cuda")  # put model to device (GPU)
 
     # Data Preparation
@@ -74,15 +81,6 @@ def main():
             ]
         ),
     )
-    # for i, (image, current) in enumerate(train_ds):
-    #     # plot the image in the batch, along with the corresponding labels
-    #     print(f"index: {i}; image: {image}; current: {current.shape}")
-    #     fig = plt.figure(figsize=(16, 8))
-    #     plt.imshow(image.permute(1, 2, 0))
-    #     plt.title(f"Current: {current}")
-    #     plt.show()
-    #     break
-    # sys.exit()
     train_loader = torch.utils.data.DataLoader(
         train_ds,
         batch_size=args.batch_size,
@@ -90,6 +88,7 @@ def main():
         num_workers=4 * NUM_GPUS,
         pin_memory=True,
         drop_last=True,
+        collate_fn=lambda x: tuple(x_.to(device) for x_ in default_collate(x)),
     )
 
     test_dir = args.test_dir
@@ -101,14 +100,6 @@ def main():
             ]
         ),
     )
-    # for i, (image, current) in enumerate(test_ds):
-    #     # plot the image in the batch, along with the corresponding labels
-    #     print(f"index: {i}; image: {image.shape}; current: {current.shape}")
-    #     fig = plt.figure(figsize=(16, 8))
-    #     plt.imshow(image.permute(1, 2, 0))
-    #     plt.title(f"Current: {current}")
-    #     plt.show()
-    #     break
     test_loader = torch.utils.data.DataLoader(
         test_ds,
         batch_size=args.batch_size,
@@ -116,6 +107,7 @@ def main():
         num_workers=4 * NUM_GPUS,
         pin_memory=True,
         drop_last=False,
+        collate_fn=lambda x: tuple(x_.to(device) for x_ in default_collate(x)),
     )
 
     # sys.exit()
@@ -168,9 +160,19 @@ def main():
     #     drop_last=False,
     # )
 
+    utils.mkdir_if_not_exist(args.model_path)
+
     # Train & Evaluate
-    exit()
-    train_module.train(model, train_loader, test_loader, args)
+    optimizer = optim.AdamW(
+        model.parameters(),
+        lr=args.lr,
+        betas=(0.9, 0.999),
+        eps=1e-08,
+        weight_decay=args.weight_decay,
+        amsgrad=False,
+    )
+    trainer = training.TorchTrainer(model, train_loader, test_loader, optimizer, args)
+    trainer.train(args.epochs)
 
 
 def create_argparser():
@@ -181,7 +183,7 @@ def create_argparser():
         model_path="./saved_models/061",
         verbose=True,
         batch_size=64,
-        epochs=100,
+        epochs=1,
         # lr=1e-4,
         lr=0.001,
         warm_up_portion=0.2,
