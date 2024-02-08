@@ -176,8 +176,8 @@ def main():
 def create_argparser():
     """Parses command line arguments."""
     defaults = dict(
-        data_dir="/home/hieule/research/benchmark_em_model/data/061/train",
-        test_dir="/home/hieule/research/benchmark_em_model/data/061/test",
+        data_dir="./data/061/train",
+        test_dir="./data/061/test",
         model_path="./saved_models/061",
         verbose=True,
         batch_size=64,
