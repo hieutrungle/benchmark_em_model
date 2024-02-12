@@ -16,6 +16,7 @@ class TorchTrainer:
         training_loader,
         validation_loader,
         optimizer,
+        device,
         args,
         loss_fn=F.l1_loss,
     ):
@@ -24,6 +25,7 @@ class TorchTrainer:
         self.validation_loader = validation_loader
         self.loss_fn = loss_fn
         self.optimizer = optimizer
+        self.device = device
         self.args = args
         # Initializing in a separate cell so we can easily add more epochs to the same run
         self.timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -41,6 +43,7 @@ class TorchTrainer:
         for i, data in enumerate(self.training_loader):
             # Every data instance is an input + label pair
             inputs, labels = data
+            inputs, labels = inputs.to(self.device), labels.to(self.device)
 
             # Zero your gradients for every batch!
             self.optimizer.zero_grad()
@@ -83,6 +86,8 @@ class TorchTrainer:
             with torch.no_grad():
                 for i, vdata in enumerate(self.validation_loader):
                     vinputs, vlabels = vdata
+                    vinputs, vlabels = vinputs.to(self.device), vlabels.to(self.device)
+
                     voutputs = self.model(vinputs)
                     vloss = self.loss_fn(voutputs, vlabels)
                     running_vloss += vloss
@@ -102,8 +107,12 @@ class TorchTrainer:
             # Track best performance, and save the model's state
             if avg_vloss < best_vloss:
                 best_vloss = avg_vloss
+                # model_path = os.path.join(
+                #     self.args.model_path,
+                #     "model_{}_{}".format(self.timestamp, epoch) + ".pt",
+                # )
                 model_path = os.path.join(
                     self.args.model_path,
-                    "model_{}_{}".format(self.timestamp, epoch) + ".pt",
+                    "model" + ".pt",
                 )
                 torch.save(self.model.state_dict(), model_path)

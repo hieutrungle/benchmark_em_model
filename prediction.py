@@ -13,7 +13,7 @@ DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
 def prediction(conductivities):
-    weight_path = "/home/hieule/research/benchmark_em_model/saved_models/061/model_20240208_171425_0.pt"
+    weight_path = "/home/hieule/research/benchmark_em_model/saved_models/061/model.pt"
     model = efficientnet.efficientnet_prediction_model(num_classes=1)
     # load weight
     checkpoint = torch.load(weight_path, map_location=DEVICE)

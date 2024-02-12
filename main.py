@@ -16,7 +16,7 @@ import torch.optim as optim
 import training
 from torch.utils.data.dataloader import default_collate
 
-DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 if DEVICE.type != "cpu":
     NUM_GPUS = len([torch.cuda.device(i) for i in range(torch.cuda.device_count())])
     # NUM_GPUS = 1
@@ -31,6 +31,8 @@ def main():
     args = create_argparser().parse_args()
     logger.configure(dir="./logs")
     utils.log_args_and_device_info(args)
+
+    torch.multiprocessing.set_start_method("spawn")
 
     # Model Initialization
     # model = efficientnet.efficientnet_model(num_classes=10)
@@ -88,7 +90,6 @@ def main():
         num_workers=4 * NUM_GPUS,
         pin_memory=True,
         drop_last=True,
-        collate_fn=lambda x: tuple(x_.to(device) for x_ in default_collate(x)),
     )
 
     test_dir = args.test_dir
@@ -107,7 +108,6 @@ def main():
         num_workers=4 * NUM_GPUS,
         pin_memory=True,
         drop_last=False,
-        collate_fn=lambda x: tuple(x_.to(device) for x_ in default_collate(x)),
     )
 
     # sys.exit()
@@ -171,7 +171,9 @@ def main():
         weight_decay=args.weight_decay,
         amsgrad=False,
     )
-    trainer = training.TorchTrainer(model, train_loader, test_loader, optimizer, args)
+    trainer = training.TorchTrainer(
+        model, train_loader, test_loader, optimizer, DEVICE, args
+    )
     trainer.train(args.epochs)
 
 
@@ -183,7 +185,7 @@ def create_argparser():
         model_path="./saved_models/061",
         verbose=True,
         batch_size=64,
-        epochs=1,
+        epochs=3,
         # lr=1e-4,
         lr=0.001,
         warm_up_portion=0.2,
