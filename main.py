@@ -119,7 +119,8 @@ def main():
 
     # weight_path = "/home/xubuntu/research/EfficientNetV2/saved_models/061_1/checkpoints/sst-epoch=000-val_loss=0.01345.pt"
     # create model
-    model = efficientnet.efficientnet_prediction_model(num_classes=1)
+    kwargs = {"device": args.device}
+    model = efficientnet.efficientnet_prediction_model(num_classes=1, **kwargs)
     # load weight
     # checkpoint = torch.load(weight_path, map_location=DEVICE)
     # model.load_state_dict(checkpoint)
