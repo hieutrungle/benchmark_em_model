@@ -237,7 +237,10 @@ def main():
     trainer = training.TorchTrainer(
         model, train_loader, test_loader, optimizer, DEVICE, args
     )
-    trainer.train(args.epochs)
+    if args.device == "ipu":
+        trainer.train_ipu(args.epochs, training_opts)
+    else:
+        trainer.train(args.epochs)
 
 
 def create_argparser():
