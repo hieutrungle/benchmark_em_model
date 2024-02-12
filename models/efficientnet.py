@@ -418,9 +418,7 @@ class PipelinedEfficienNet(EfficientNet):
     def forward(self, x, labels):
         outputs = super().forward(x)
         if self.training:
-            final_loss = poptorch.identity_loss(
-                self.loss_fn(outputs, labels), reduction="none"
-            )
+            final_loss = self.loss_fn(outputs, labels)
             return outputs, final_loss
         else:
             return outputs
