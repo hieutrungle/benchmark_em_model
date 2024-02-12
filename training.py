@@ -126,7 +126,7 @@ class TorchTrainer:
                 for i, data in enumerate(self.training_loader):
                     inputs, labels = data
                     output, loss = self.model(inputs, labels)
-                    logger.log("LOSS train {}".format(loss))
+                logger.log("LOSS train {}".format(loss))
 
         self.model.detachFromDevice()
 
