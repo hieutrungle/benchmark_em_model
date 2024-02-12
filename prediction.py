@@ -6,19 +6,21 @@ import torchvision.transforms as transforms
 import numpy as np
 import pandas as pd
 import time
+import timer
+import logger
 
 DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
 def prediction(conductivities):
-    weight_path = "/home/xubuntu/research/EfficientNetV2/saved_models/56_256/checkpoints/sst-epoch=092-val_loss=0.00008.pt"
+    weight_path = "/home/hieule/research/benchmark_em_model/saved_models/061/model_20240208_171425_0.pt"
     model = efficientnet.efficientnet_prediction_model(num_classes=1)
     # load weight
     checkpoint = torch.load(weight_path, map_location=DEVICE)
     model.load_state_dict(checkpoint)
 
     # TODO: get prediction data
-    test_dir = "/home/xubuntu/research/Data4CNN/56/prediction"
+    test_dir = "/home/hieule/research/benchmark_em_model/data/061/test"
     test_ds = data_io.ImageCurrentDataset(
         test_dir,
         transform=transforms.Compose(
@@ -47,16 +49,18 @@ def prediction(conductivities):
     # TODO: forward test data using loaded model
     model.eval()
     all_pred_currents = []
-    for i, ((images, currents), (conductivity)) in enumerate(
-        zip(test_loader, conductivity_loader)
-    ):
-        # images: [B, C, H, W]
-        # currents: [B, 1]
-        # print(f"images: {images.shape}; currents: {currents.shape}")
-        pred_currents = model.forward(images)
-        pred_currents = pred_currents.detach().numpy()
-        # pred_currents = pred_currents * (1/conductivity.numpy())
-        all_pred_currents.extend(list(pred_currents[:, 0]))
+    with timer.Timer(logger_fn=logger.log):
+        with torch.no_grad():
+            for i, ((images, currents), (conductivity)) in enumerate(
+                zip(test_loader, conductivity_loader)
+            ):
+                # images: [B, C, H, W]
+                # currents: [B, 1]
+                pred_currents = model.forward(images)
+                pred_currents = pred_currents.detach().numpy()
+                # pred_currents = pred_currents * (1/conductivity.numpy())
+                all_pred_currents.extend(list(pred_currents[:, 0]))
+
     all_pred_currents = np.array(all_pred_currents)
 
     # for i in range(len(all_pred_currents)):
@@ -82,11 +86,6 @@ def prediction(conductivities):
 
 
 if __name__ == "__main__":
-    # conductivities = np.linspace(0.03, 3, 100)
-    conductivities = [1] * 10
+    conductivities = [1] * 175
     voltage = 1.0
-    # conductivities = [0.03 * i for i in range(1, 101, 1)]
-    start = time.time()
     prediction(conductivities)
-    end = time.time()
-    print(end - start)

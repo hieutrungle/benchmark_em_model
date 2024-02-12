@@ -22,3 +22,4 @@ sigmap.egg-info/
 *stats_*
 *job*
 saved_models/
+prediction.xlsx
