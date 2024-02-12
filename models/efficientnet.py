@@ -418,7 +418,9 @@ class PipelinedEfficienNet(EfficientNet):
     def forward(self, x, labels):
         outputs = super().forward(x)
         if self.training:
-            final_loss = poptorch.identity_loss(self.loss_fn(outputs, labels), reduction="none")
+            final_loss = poptorch.identity_loss(
+                self.loss_fn(outputs, labels), reduction="none"
+            )
             return outputs, final_loss
         else:
             return outputs
@@ -434,10 +436,16 @@ def _efficientnet(
 ) -> EfficientNet:
     if weights is not None:
         _ovewrite_named_param(kwargs, "num_classes", len(weights.meta["categories"]))
+    device = kwargs.get("device", None)
 
-    model = EfficientNet(
-        inverted_residual_setting, dropout, last_channel=last_channel, **kwargs
-    )
+    if device == "ipu":
+        model = PipelinedEfficienNet(
+            inverted_residual_setting, dropout, last_channel=last_channel, **kwargs
+        )
+    else:
+        model = EfficientNet(
+            inverted_residual_setting, dropout, last_channel=last_channel, **kwargs
+        )
 
     if weights is not None:
         model.load_state_dict(weights.get_state_dict(progress=progress))
@@ -744,8 +752,9 @@ def efficientnet_model(
     num_classes=2,
     weights="DEFAULT",
     progress=True,
+    **kwargs,
 ):
-    model = model_func(weights=weights, progress=progress)
+    model = model_func(weights=weights, progress=progress, **kwargs)
     print(f"weights: {weights}")
     print(f"progress: {progress}")
     inverted_residual_setting, last_channel = _efficientnet_conf(model_name)

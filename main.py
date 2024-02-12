@@ -207,7 +207,9 @@ def main():
             shuffle=False,
             drop_last=False,
         )
-
+        ipu_config = dict()
+        model.load_poptorch()
+        model.parallelize(ipu_config)
         model = poptorch.trainingModel(
             model, options=training_opts, optimizer=optimizer
         )
