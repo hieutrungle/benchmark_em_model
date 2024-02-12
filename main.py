@@ -190,8 +190,8 @@ def main():
         training_opts = ipu_training_options(
             gradient_accumulation=1,
             replication_factor=1,
-            device_iterations=5,
-            number_of_ipus=1,
+            device_iterations=10,
+            number_of_ipus=2,
             cache_dir=cache_dir,
         )
         train_loader = poptorch.DataLoader(
