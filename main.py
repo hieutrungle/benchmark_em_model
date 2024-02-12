@@ -238,7 +238,7 @@ def main():
         model, train_loader, test_loader, optimizer, DEVICE, args
     )
     if args.device == "ipu":
-        trainer.train_ipu(args.epochs, training_opts)
+        trainer.train_ipu(args.epochs)
     else:
         trainer.train(args.epochs)
 
