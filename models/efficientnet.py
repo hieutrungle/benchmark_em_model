@@ -771,8 +771,9 @@ def efficientnet_prediction_model(
     weights="DEFAULT",
     num_classes=1,
     progress=True,
+    **kwargs,
 ):
-    model = model_func(weights=weights, progress=progress)
+    model = model_func(weights=weights, progress=progress, **kwargs)
     print(f"weights: {weights}")
     print(f"progress: {progress}")
     inverted_residual_setting, last_channel = _efficientnet_conf(model_name)
