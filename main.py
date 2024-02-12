@@ -248,7 +248,7 @@ def create_argparser():
         model_path="./saved_models/061",
         verbose=True,
         batch_size=64,
-        epochs=3,
+        epochs=1,
         # lr=1e-4,
         lr=0.001,
         warm_up_portion=0.2,

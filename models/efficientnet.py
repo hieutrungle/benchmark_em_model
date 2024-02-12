@@ -22,6 +22,7 @@ from torchvision.models._utils import (
     _ovewrite_named_param,
     handle_legacy_interface,
 )
+import torch.nn.functional as F
 
 __all__ = [
     "EfficientNet",
@@ -379,22 +380,6 @@ class EfficientNet(nn.Module):
 
     def _forward_impl(self, x: Tensor) -> Tensor:
         x = self.features(x)
-        # B, K, C, H, W = x.shape
-        # x = x.view(B * K // 1, C, H, W)
-
-        # num_merge = int(math.log2(K))
-        # num_remaining_layers = len(self.features) - num_merge
-        # assert num_remaining_layers>=0
-
-        # # First layer
-        # for i in range(num_merge):
-        #     x = self.features[i](x)
-        #     BK, C, H, W =  x.shape
-        #     x = x.view(BK// 2, 2, C, H, W)
-        #     x = torch.mean(x, dim=1, keepdim=False)
-
-        # for i in range(num_merge, len(self.features)):
-        #     x = self.features[i](x)
 
         x = self.avgpool(x)
         x = torch.flatten(x, 1)
@@ -405,6 +390,38 @@ class EfficientNet(nn.Module):
 
     def forward(self, x: Tensor) -> Tensor:
         return self._forward_impl(x)
+
+
+class PipelinedEfficienNet(EfficientNet):
+    def load_poptorch(self):
+        import poptorch
+
+    def parallelize(self, ipu_config, loss_fn=F.l1_loss):
+        self.loss_fn = loss_fn
+        # layer_ipu = get_layer_ipu(ipu_config["layers_per_ipu"])
+        # print("-------------------- Device Allocation --------------------")
+        # print("Embedding  --> IPU 0")
+        # self.bert.embeddings = poptorch.BeginBlock(self.bert.embeddings, "Embedding", ipu_id=0)
+
+        # for index, layer in enumerate(self.bert.encoder.layer):
+        #     ipu = layer_ipu[index]
+        #     if index != self.config.num_hidden_layers - 1:
+        #         checkpoint_outputs(layer)
+        #     self.bert.encoder.layer[index] = poptorch.BeginBlock(layer, f"Encoder{index}", ipu_id=ipu)
+        #     print(f"Encoder {index:<2} --> IPU {ipu}")
+
+        # print(f"QA Outputs --> IPU {ipu}")
+        # self.qa_outputs = poptorch.BeginBlock(self.qa_outputs, "QA Outputs", ipu_id=ipu)
+        return self
+
+    # Model training loop is entirely running on IPU so we add Loss computation here
+    def forward(self, x, labels):
+        outputs = super().forward(x)
+        if self.training:
+            final_loss = poptorch.identity_loss(self.loss_fn(outputs, labels), reduction="none")
+            return outputs, final_loss
+        else:
+            return outputs
 
 
 def _efficientnet(
@@ -753,7 +770,6 @@ def efficientnet_prediction_model(
 
     # only output 1 current prediction
     model.classifier = nn.Sequential(
-        
         nn.Linear(last_channel, last_channel // 4),
         nn.Linear(last_channel // 4, num_classes),
     )

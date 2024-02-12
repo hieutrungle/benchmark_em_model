@@ -118,3 +118,20 @@ class TorchTrainer:
                     "model" + ".pt",
                 )
                 torch.save(self.model.state_dict(), model_path)
+
+    def train_ipu(self, epochs):
+        for epoch in range(epochs):
+            logger.log("EPOCH {}:".format(epoch + 1))
+
+            for i, data in enumerate(self.training_loader):
+                inputs, labels = data
+                output, loss = self.model(inputs, labels)
+                logger.log("LOSS train {}".format(loss))
+
+        self.model.detachFromDevice()
+
+        model_path = os.path.join(
+            self.args.model_path,
+            "model" + ".pt",
+        )
+        torch.save(self.model.state_dict(), model_path)
