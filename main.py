@@ -26,6 +26,84 @@ os.environ["DEVICE"] = str(DEVICE.type)
 os.environ["NUM_GPUS"] = str(NUM_GPUS)
 
 
+def ipu_training_options(
+    gradient_accumulation,
+    replication_factor,
+    device_iterations,
+    number_of_ipus,
+    cache_dir,
+):
+    import popart
+    import poptorch
+
+    opts = poptorch.Options()
+    opts.randomSeed(12345)
+    opts.deviceIterations(device_iterations)
+
+    # Use Pipelined Execution
+    opts.setExecutionStrategy(
+        poptorch.PipelinedExecution(poptorch.AutoStage.AutoIncrement)
+    )
+
+    # Use Stochastic Rounding
+    opts.Precision.enableStochasticRounding(True)
+
+    # Half precision partials for matmuls and convolutions
+    opts.Precision.setPartialsType(torch.float16)
+
+    opts.replicationFactor(replication_factor)
+
+    opts.Training.gradientAccumulation(gradient_accumulation)
+
+    # Return the final result from IPU to host
+    opts.outputMode(poptorch.OutputMode.Final)
+
+    # Cache compiled executable to disk
+    opts.enableExecutableCaching(cache_dir)
+
+    # # Setting system specific options
+    # # On-chip Replicated Tensor Sharding of Optimizer State
+    # opts.TensorLocations.setOptimizerLocation(
+    #     poptorch.TensorLocationSettings()
+    #     # Optimizer state lives on IPU if running on a POD16
+    #     .useOnChipStorage(number_of_ipus == 16)
+    #     # Optimizer state sharded between replicas with zero-redundancy
+    #     .useReplicatedTensorSharding(number_of_ipus == 16)
+    # )
+
+    # # Available Transient Memory For matmuls and convolutions operations dependent on system type
+    # if number_of_ipus == 16:
+    #     amps = [0.08, 0.28, 0.32, 0.32, 0.36, 0.38, 0.4, 0.1]
+    # else:
+    #     amps = [0.15, 0.18, 0.2, 0.25]
+
+    # opts.setAvailableMemoryProportion({f"IPU{i}": mp for i, mp in enumerate(amps)})
+
+    ## Advanced performance options ##
+
+    # Only stream needed tensors back to host
+    opts._Popart.set("disableGradAccumulationTensorStreams", True)
+
+    # Copy inputs and outputs as they are needed
+    opts._Popart.set(
+        "subgraphCopyingStrategy", int(popart.SubgraphCopyingStrategy.JustInTime)
+    )
+
+    # Parallelize optimizer step update
+    opts._Popart.set(
+        "accumulateOuterFragmentSettings.schedule",
+        int(popart.AccumulateOuterFragmentSchedule.OverlapMemoryOptimized),
+    )
+    opts._Popart.set("accumulateOuterFragmentSettings.excludedVirtualGraphs", ["0"])
+
+    # Limit number of sub-graphs that are outlined (to preserve memory)
+    opts._Popart.set("outlineThreshold", 10.0)
+
+    # Only attach to IPUs after compilation has completed.
+    opts.connectionType(poptorch.ConnectionType.OnDemand)
+    return opts
+
+
 def main():
     torch.cuda.empty_cache()
     args = create_argparser().parse_args()
@@ -61,10 +139,8 @@ def main():
         row_settings=("depth", "ascii_only"),
     )
     if DEVICE.type == "cuda" and NUM_GPUS > 0:
-        device = torch.device("cuda")
         model = model.to("cuda")
     else:
-        device = torch.device("cpu")
         model = model.to("cpu")
     # model = model.to("cuda")  # put model to device (GPU)
 
@@ -83,14 +159,6 @@ def main():
             ]
         ),
     )
-    train_loader = torch.utils.data.DataLoader(
-        train_ds,
-        batch_size=args.batch_size,
-        shuffle=True,
-        num_workers=4 * NUM_GPUS,
-        pin_memory=True,
-        drop_last=True,
-    )
 
     test_dir = args.test_dir
     test_ds = data_io.ImageCurrentDataset(
@@ -101,68 +169,7 @@ def main():
             ]
         ),
     )
-    test_loader = torch.utils.data.DataLoader(
-        test_ds,
-        batch_size=args.batch_size,
-        shuffle=False,
-        num_workers=4 * NUM_GPUS,
-        pin_memory=True,
-        drop_last=False,
-    )
 
-    # sys.exit()
-
-    # Data Preparation
-    # normalize = transforms.Normalize(
-    #     mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]
-    # )
-    # traindir = os.path.join(args.data_dir, "train")
-    # traindir = os.path.join(args.data_dir)
-    # traindir2 = os.path.join(args.data_dir2) if args.data_dir2 != "None" else None
-    # valdir = os.path.join("./data/imgs", "val")
-    # train_dataset = data_io.CombinedImageDataset(
-    #     traindir,
-    #     traindir2,
-    # transforms.Compose(
-    #     [
-    #         transforms.RandomResizedCrop(64),
-    #         transforms.RandomHorizontalFlip(),
-    #         transforms.ToTensor(),
-    #         # normalize,
-    #     ]
-    # ),
-    # )
-    # train_loader = torch.utils.data.DataLoader(
-    #     train_dataset,
-    #     batch_size=args.batch_size,
-    #     shuffle=True,
-    #     num_workers=4 * NUM_GPUS,
-    #     pin_memory=True,
-    #     drop_last=True,
-    # )
-    # val_dataset = datasets.ImageFolder(
-    #     valdir,
-    #     transforms.Compose(
-    #         [
-    #             transforms.Resize(64),
-    #             transforms.CenterCrop(64),
-    #             transforms.ToTensor(),
-    #             # normalize,
-    #         ]
-    #     ),
-    # )
-    # val_loader = torch.utils.data.DataLoader(
-    #     val_dataset,
-    #     batch_size=args.batch_size,
-    #     shuffle=False,
-    #     num_workers=4 * NUM_GPUS,
-    #     pin_memory=True,
-    #     drop_last=False,
-    # )
-
-    utils.mkdir_if_not_exist(args.model_path)
-
-    # Train & Evaluate
     optimizer = optim.AdamW(
         model.parameters(),
         lr=args.lr,
@@ -171,6 +178,62 @@ def main():
         weight_decay=args.weight_decay,
         amsgrad=False,
     )
+    train_loader = None
+    test_loader = None
+    training_opts = None
+    if args.device == "ipu":
+        import poptorch
+
+        logger.log("Using IPU.")
+        cache_dir = utils.mkdir_if_not_exist("./tmp")
+        training_opts = ipu_training_options(
+            gradient_accumulation=1,
+            replication_factor=1,
+            device_iterations=1,
+            number_of_ipus=1,
+            cache_dir=cache_dir,
+        )
+        train_loader = poptorch.DataLoader(
+            options=training_opts,
+            dataset=train_ds,
+            batch_size=args.batch_size,
+            shuffle=True,
+            drop_last=True,
+        )
+        test_loader = poptorch.DataLoader(
+            options=training_opts,
+            dataset=test_ds,
+            batch_size=args.batch_size,
+            shuffle=False,
+            drop_last=False,
+        )
+
+        model = poptorch.trainingModel(
+            model, options=training_opts, optimizer=optimizer
+        )
+    else:
+        logger.log("Using CUDA and compiling model.")
+        train_loader = torch.utils.data.DataLoader(
+            train_ds,
+            batch_size=args.batch_size,
+            shuffle=True,
+            num_workers=16,
+            pin_memory=True,
+            drop_last=True,
+        )
+        test_loader = torch.utils.data.DataLoader(
+            test_ds,
+            batch_size=args.batch_size,
+            shuffle=False,
+            num_workers=16,
+            pin_memory=True,
+            drop_last=False,
+        )
+        model = torch.compile(model)
+
+    utils.mkdir_if_not_exist(args.model_path)
+
+    # Train & Evaluate
     trainer = training.TorchTrainer(
         model, train_loader, test_loader, optimizer, DEVICE, args
     )
@@ -196,6 +259,7 @@ def create_argparser():
         resume="",
         iter=-1,  # -1 means resume from the best model
         conductivity=1,
+        device="cuda",
     )
     parser = argparse.ArgumentParser()
     utils.add_dict_to_argparser(parser, defaults)
