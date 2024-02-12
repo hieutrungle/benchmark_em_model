@@ -122,11 +122,11 @@ class TorchTrainer:
     def train_ipu(self, epochs):
         for epoch in range(epochs):
             logger.log("EPOCH {}:".format(epoch + 1))
-
-            for i, data in enumerate(self.training_loader):
-                inputs, labels = data
-                output, loss = self.model(inputs, labels)
-                logger.log("LOSS train {}".format(loss))
+            with timer.Timer(logger_fn=logger.log):
+                for i, data in enumerate(self.training_loader):
+                    inputs, labels = data
+                    output, loss = self.model(inputs, labels)
+                    logger.log("LOSS train {}".format(loss))
 
         self.model.detachFromDevice()
 
