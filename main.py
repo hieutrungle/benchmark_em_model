@@ -145,6 +145,8 @@ def main():
 
     # Get the layers of the PyTorch model
     # layers = list(model.features.children())
+    # print(layers[0])
+    # exit()
     # for i, layer in enumerate(layers):
     #     print(f"Layer {i}: {layer._get_name()}")
 

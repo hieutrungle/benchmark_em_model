@@ -403,22 +403,30 @@ def get_layer_ipu(layers_per_ipu):
 class PipelinedEfficienNet(EfficientNet):
 
     def parallelize(self, ipu_config, loss_fn=F.l1_loss):
+        import poptorch
+
         self.loss_fn = loss_fn
         layer_ipu = get_layer_ipu(ipu_config["layers_per_ipu"])
         print(f"layer_ipu: {layer_ipu}")
         print("-------------------- Device Allocation --------------------")
-        # print("Embedding  --> IPU 0")
+
         # self.bert.embeddings = poptorch.BeginBlock(self.bert.embeddings, "Embedding", ipu_id=0)
+        layers = list(model.features.children())
+        for index, layer in enumerate(layers):
+            ipu_id = layer_ipu[index]
+            # if index != self.config.num_hidden_layers - 1:
+            #     checkpoint_outputs(layer)
+            model.features.layer[index] = poptorch.BeginBlock(
+                layer, f"model.features{index}", ipu_id=ipu_id
+            )
+            print(f"model.features {index:<2} --> IPU {ipu_id}")
 
-        # for index, layer in enumerate(self.bert.encoder.layer):
-        #     ipu = layer_ipu[index]
-        #     if index != self.config.num_hidden_layers - 1:
-        #         checkpoint_outputs(layer)
-        #     self.bert.encoder.layer[index] = poptorch.BeginBlock(layer, f"Encoder{index}", ipu_id=ipu)
-        #     print(f"Encoder {index:<2} --> IPU {ipu}")
-
-        # print(f"QA Outputs --> IPU {ipu}")
-        # self.qa_outputs = poptorch.BeginBlock(self.qa_outputs, "QA Outputs", ipu_id=ipu)
+        print(f"AdaptiveAvgPool2d --> IPU {ipu_id}")
+        self.avgpool = poptorch.BeginBlock(
+            self.qa_outputs, "AdaptiveAvgPool2d", ipu_id=ipu_id
+        )
+        print(f"Linear --> IPU {ipu_id}")
+        self.classifier = poptorch.BeginBlock(self.classifier, "Linear", ipu_id=ipu_id)
         return self
 
     # Model training loop is entirely running on IPU so we add Loss computation here
