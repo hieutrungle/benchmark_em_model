@@ -61,15 +61,15 @@ def ipu_training_options(
     # Cache compiled executable to disk
     opts.enableExecutableCaching(cache_dir)
 
-    # # Setting system specific options
-    # # On-chip Replicated Tensor Sharding of Optimizer State
-    # opts.TensorLocations.setOptimizerLocation(
-    #     poptorch.TensorLocationSettings()
-    #     # Optimizer state lives on IPU if running on a POD16
-    #     .useOnChipStorage(number_of_ipus == 16)
-    #     # Optimizer state sharded between replicas with zero-redundancy
-    #     .useReplicatedTensorSharding(number_of_ipus == 16)
-    # )
+    # Setting system specific options
+    # On-chip Replicated Tensor Sharding of Optimizer State
+    opts.TensorLocations.setOptimizerLocation(
+        poptorch.TensorLocationSettings()
+        # Optimizer state lives on IPU if running on a POD16
+        .useOnChipStorage(number_of_ipus == 16)
+        # Optimizer state sharded between replicas with zero-redundancy
+        .useReplicatedTensorSharding(number_of_ipus == 16)
+    )
 
     # # Available Transient Memory For matmuls and convolutions operations dependent on system type
     # if number_of_ipus == 16:
@@ -207,7 +207,7 @@ def main():
             shuffle=False,
             drop_last=False,
         )
-        ipu_config = dict()
+        ipu_config = {"num_ipus": args.num_ipus}
         model.parallelize(ipu_config)
         model = poptorch.trainingModel(
             model, options=training_opts, optimizer=optimizer
