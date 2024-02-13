@@ -411,19 +411,19 @@ class PipelinedEfficienNet(EfficientNet):
         print("-------------------- Device Allocation --------------------")
 
         # self.bert.embeddings = poptorch.BeginBlock(self.bert.embeddings, "Embedding", ipu_id=0)
-        layers = list(model.features.children())
+        layers = list(self.features.children())
         for index, layer in enumerate(layers):
             ipu_id = layer_ipu[index]
             # if index != self.config.num_hidden_layers - 1:
             #     checkpoint_outputs(layer)
-            model.features.layer[index] = poptorch.BeginBlock(
-                layer, f"model.features{index}", ipu_id=ipu_id
+            self.features.layer[index] = poptorch.BeginBlock(
+                layer, f"self.features{index}", ipu_id=ipu_id
             )
-            print(f"model.features {index:<2} --> IPU {ipu_id}")
+            print(f"self.features {index:<2} --> IPU {ipu_id}")
 
         print(f"AdaptiveAvgPool2d --> IPU {ipu_id}")
         self.avgpool = poptorch.BeginBlock(
-            self.qa_outputs, "AdaptiveAvgPool2d", ipu_id=ipu_id
+            self.avgpool, "AdaptiveAvgPool2d", ipu_id=ipu_id
         )
         print(f"Linear --> IPU {ipu_id}")
         self.classifier = poptorch.BeginBlock(self.classifier, "Linear", ipu_id=ipu_id)
