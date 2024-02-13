@@ -127,21 +127,22 @@ def main():
 
     # input shape is of 2 dimensions, however, the model expects 4 dimensions
     input_shape = (1, 3, 256, 256)
-    # summary(
-    #     model,
-    #     input_shape,
-    #     depth=2,  # go into 2 sub layers depth
-    #     col_names=(
-    #         "input_size",
-    #         "output_size",
-    #         "num_params",
-    #     ),
-    #     row_settings=("depth", "ascii_only"),
-    # )
+    summary(
+        model,
+        input_shape,
+        depth=4,  # go into 2 sub layers depth
+        col_names=(
+            "input_size",
+            "output_size",
+            "num_params",
+        ),
+        row_settings=("depth", "ascii_only"),
+    )
     if DEVICE.type == "cuda" and NUM_GPUS > 0:
         model = model.to("cuda")
     else:
         model = model.to("cpu")
+    exit()
     # model = model.to("cuda")  # put model to device (GPU)
 
     # Data Preparation
