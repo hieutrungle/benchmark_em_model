@@ -230,7 +230,7 @@ def main():
         elif args.num_ipus == 8:
             layers_per_ipu = [1, 1, 1, 1, 1, 1, 1, 1]
         ipu_config = {"layers_per_ipu": layers_per_ipu}
-        model.parallelize(ipu_config)
+        model.parallelize(ipu_config).half().train()
         model = poptorch.trainingModel(
             model, options=training_opts, optimizer=optimizer
         )
