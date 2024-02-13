@@ -416,7 +416,7 @@ class PipelinedEfficienNet(EfficientNet):
             ipu_id = layer_ipu[index]
             # if index != self.config.num_hidden_layers - 1:
             #     checkpoint_outputs(layer)
-            self.features.layer[index] = poptorch.BeginBlock(
+            self.features.children().layer[index] = poptorch.BeginBlock(
                 layer, f"self.features{index}", ipu_id=ipu_id
             )
             print(f"self.features {index:<2} --> IPU {ipu_id}")
