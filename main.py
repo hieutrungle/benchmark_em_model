@@ -41,9 +41,9 @@ def ipu_training_options(
     opts.deviceIterations(device_iterations)
 
     # Use Pipelined Execution
-    opts.setExecutionStrategy(
-        poptorch.PipelinedExecution(poptorch.AutoStage.AutoIncrement)
-    )
+    # opts.setExecutionStrategy(
+    #     poptorch.PipelinedExecution(poptorch.AutoStage.AutoIncrement)
+    # )
 
     # Use Stochastic Rounding
     opts.Precision.enableStochasticRounding(True)
@@ -63,13 +63,13 @@ def ipu_training_options(
 
     # Setting system specific options
     # On-chip Replicated Tensor Sharding of Optimizer State
-    opts.TensorLocations.setOptimizerLocation(
-        poptorch.TensorLocationSettings()
-        # Optimizer state lives on IPU if running on a POD16
-        .useOnChipStorage(number_of_ipus == 16)
-        # Optimizer state sharded between replicas with zero-redundancy
-        .useReplicatedTensorSharding(number_of_ipus == 16)
-    )
+    # opts.TensorLocations.setOptimizerLocation(
+    #     poptorch.TensorLocationSettings()
+    #     # Optimizer state lives on IPU if running on a POD16
+    #     .useOnChipStorage(number_of_ipus == 16)
+    #     # Optimizer state sharded between replicas with zero-redundancy
+    #     .useReplicatedTensorSharding(number_of_ipus == 16)
+    # )
 
     # # Available Transient Memory For matmuls and convolutions operations dependent on system type
     # if number_of_ipus == 16:
