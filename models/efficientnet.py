@@ -412,11 +412,12 @@ class PipelinedEfficienNet(EfficientNet):
 
         # self.bert.embeddings = poptorch.BeginBlock(self.bert.embeddings, "Embedding", ipu_id=0)
         layers = list(self.features.children())
+        iterr = self.features.children()
         for index, layer in enumerate(layers):
             ipu_id = layer_ipu[index]
             # if index != self.config.num_hidden_layers - 1:
             #     checkpoint_outputs(layer)
-            self.features.children()[index] = poptorch.BeginBlock(
+            iterr.__next__() = poptorch.BeginBlock(
                 layer, f"self.features{index}", ipu_id=ipu_id
             )
             print(f"self.features {index:<2} --> IPU {ipu_id}")
