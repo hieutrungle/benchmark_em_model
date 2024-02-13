@@ -123,6 +123,7 @@ class TorchTrainer:
         for epoch in range(epochs):
             logger.log("EPOCH {}:".format(epoch + 1))
             with timer.Timer(logger_fn=logger.log):
+                loss = float("inf")
                 for i, data in enumerate(self.training_loader):
                     inputs, labels = data
                     output, loss = self.model(inputs, labels)
