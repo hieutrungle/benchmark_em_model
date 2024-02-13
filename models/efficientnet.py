@@ -392,14 +392,21 @@ class EfficientNet(nn.Module):
         return self._forward_impl(x)
 
 
+def get_layer_ipu(layers_per_ipu):
+    # List of the IPU Id for each encoder layer
+    layer_ipu = []
+    for ipu, n_layers in enumerate(layers_per_ipu):
+        layer_ipu += [ipu] * n_layers
+    return layer_ipu
+
+
 class PipelinedEfficienNet(EfficientNet):
-    def load_poptorch(self):
-        import poptorch
 
     def parallelize(self, ipu_config, loss_fn=F.l1_loss):
         self.loss_fn = loss_fn
-        # layer_ipu = get_layer_ipu(ipu_config["layers_per_ipu"])
-        # print("-------------------- Device Allocation --------------------")
+        layer_ipu = get_layer_ipu(ipu_config["layers_per_ipu"])
+        print(f"layer_ipu: {layer_ipu}")
+        print("-------------------- Device Allocation --------------------")
         # print("Embedding  --> IPU 0")
         # self.bert.embeddings = poptorch.BeginBlock(self.bert.embeddings, "Embedding", ipu_id=0)
 

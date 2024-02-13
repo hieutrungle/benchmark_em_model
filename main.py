@@ -127,22 +127,28 @@ def main():
 
     # input shape is of 2 dimensions, however, the model expects 4 dimensions
     input_shape = (1, 3, 256, 256)
-    summary(
-        model,
-        input_shape,
-        depth=4,  # go into 2 sub layers depth
-        col_names=(
-            "input_size",
-            "output_size",
-            "num_params",
-        ),
-        row_settings=("depth", "ascii_only"),
-    )
+    # summary(
+    #     model,
+    #     input_shape,
+    #     depth=4,  # go into 2 sub layers depth
+    #     col_names=(
+    #         "input_size",
+    #         "output_size",
+    #         "num_params",
+    #     ),
+    #     row_settings=("depth", "ascii_only"),
+    # )
     if DEVICE.type == "cuda" and NUM_GPUS > 0:
         model = model.to("cuda")
     else:
         model = model.to("cpu")
-    exit()
+
+    # Get the layers of the PyTorch model
+    # layers = list(model.features.children())
+    # for i, layer in enumerate(layers):
+    #     print(f"Layer {i}: {layer._get_name()}")
+
+    # exit()
     # model = model.to("cuda")  # put model to device (GPU)
 
     # Data Preparation
@@ -208,7 +214,17 @@ def main():
             shuffle=False,
             drop_last=False,
         )
-        ipu_config = {"num_ipus": args.num_ipus}
+
+        layers_per_ipu = [8]
+        if args.num_ipus == 1:
+            layers_per_ipu = [8]
+        elif args.num_ipus == 2:
+            layers_per_ipu = [6, 2]
+        elif args.num_ipus == 4:
+            layers_per_ipu = [4, 2, 1, 1]
+        elif args.num_ipus == 8:
+            layers_per_ipu = [1, 1, 1, 1, 1, 1, 1, 1]
+        ipu_config = {"layers_per_ipu": layers_per_ipu}
         model.parallelize(ipu_config)
         model = poptorch.trainingModel(
             model, options=training_opts, optimizer=optimizer
