@@ -427,7 +427,7 @@ class PipelinedEfficienNet(EfficientNet):
         return self
 
     # Model training loop is entirely running on IPU so we add Loss computation here
-    def forward(self, x, labels):
+    def forward(self, x, labels=None):
         outputs = super().forward(x)
         if self.training:
             final_loss = self.loss_fn(outputs, labels)
