@@ -240,7 +240,7 @@ def main():
             pin_memory=True,
             drop_last=False,
         )
-        model = torch.compile(model, fullgraph=True)
+        # model = torch.compile(model, fullgraph=True)
 
     # exit()
     utils.mkdir_if_not_exist(args.model_path)
