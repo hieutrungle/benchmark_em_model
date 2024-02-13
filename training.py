@@ -48,7 +48,7 @@ class TorchTrainer:
             inputs, labels = inputs.to(self.device), labels.to(self.device)
 
             # Zero your gradients for every batch!
-            self.optimizer.zero_grad()
+            self.optimizer.zero_grad(set_to_none=True)
 
             # Make predictions for this batch
             outputs = self.model(inputs)
@@ -65,8 +65,8 @@ class TorchTrainer:
 
         last_loss = running_loss / (i + 1)  # loss per batch
         logger.log("  batch {} loss: {}".format(i + 1, last_loss))
-        tb_x = epoch_index * len(self.training_loader) + i + 1
-        self.writer.add_scalar("Loss/train", last_loss, tb_x)
+        # tb_x = epoch_index * len(self.training_loader) + i + 1
+        # self.writer.add_scalar("Loss/train", last_loss, tb_x)
 
         return last_loss
 

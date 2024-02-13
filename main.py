@@ -236,6 +236,7 @@ def main():
         )
     else:
         logger.log("Using CUDA and compiling model.")
+        torch.backends.cudnn.benchmark = True
         train_loader = torch.utils.data.DataLoader(
             train_ds,
             batch_size=args.batch_size,
