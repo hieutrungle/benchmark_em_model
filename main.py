@@ -126,7 +126,6 @@ def main():
     # model.load_state_dict(checkpoint)
 
     # input shape is of 2 dimensions, however, the model expects 4 dimensions
-    # input_shape = (1, 3, 400, 400)
     input_shape = (1, 3, 256, 256)
     # summary(
     #     model,
@@ -188,10 +187,10 @@ def main():
         logger.log("Using IPU.")
         cache_dir = utils.mkdir_if_not_exist("./tmp")
         training_opts = ipu_training_options(
-            gradient_accumulation=1,
-            replication_factor=1,
-            device_iterations=10,
-            number_of_ipus=2,
+            gradient_accumulation=args.gradient_accumulation,
+            replication_factor=args.replication_factor,
+            device_iterations=args.device_iterations,
+            number_of_ipus=args.num_ipus,
             cache_dir=cache_dir,
         )
         train_loader = poptorch.DataLoader(
@@ -209,7 +208,6 @@ def main():
             drop_last=False,
         )
         ipu_config = dict()
-        model.load_poptorch()
         model.parallelize(ipu_config)
         model = poptorch.trainingModel(
             model, options=training_opts, optimizer=optimizer
@@ -266,6 +264,10 @@ def create_argparser():
         iter=-1,  # -1 means resume from the best model
         conductivity=1,
         device="cuda",
+        device_iterations=10,
+        replication_factor=1,
+        gradient_accumulation=1,
+        num_ipus=1,
     )
     parser = argparse.ArgumentParser()
     utils.add_dict_to_argparser(parser, defaults)
