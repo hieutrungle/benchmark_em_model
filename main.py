@@ -254,7 +254,7 @@ def main():
         )
         model = torch.compile(model)
 
-    exit()
+    # exit()
     utils.mkdir_if_not_exist(args.model_path)
 
     # Train & Evaluate

@@ -407,7 +407,6 @@ class PipelinedEfficienNet(EfficientNet):
 
         self.loss_fn = loss_fn
         layer_ipu = get_layer_ipu(ipu_config["layers_per_ipu"])
-        print(f"layer_ipu: {layer_ipu}")
         print("-------------------- Device Allocation --------------------")
 
         # self.bert.embeddings = poptorch.BeginBlock(self.bert.embeddings, "Embedding", ipu_id=0)
