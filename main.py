@@ -143,19 +143,6 @@ def main():
     else:
         model = model.to("cpu")
 
-    # Get the layers of the PyTorch model
-    # layers = list(model.features.children())
-    # iterr = model.features.children()
-    # print(iterr.__next__())
-    # print(iterr.__next__())
-    # print(iterr.__next__())
-    # exit()
-    # for i, layer in enumerate(layers):
-    #     print(f"Layer {i}: {layer._get_name()}")
-
-    # exit()
-    # model = model.to("cuda")  # put model to device (GPU)
-
     # Data Preparation
     # normalize = transforms.Normalize(
     #     mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]
