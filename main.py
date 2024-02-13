@@ -41,9 +41,9 @@ def ipu_training_options(
     opts.deviceIterations(device_iterations)
 
     # Use Pipelined Execution
-    # opts.setExecutionStrategy(
-    #     poptorch.PipelinedExecution(poptorch.AutoStage.AutoIncrement)
-    # )
+    opts.setExecutionStrategy(
+        poptorch.PipelinedExecution(poptorch.AutoStage.AutoIncrement)
+    )
 
     # Use Stochastic Rounding
     opts.Precision.enableStochasticRounding(True)
