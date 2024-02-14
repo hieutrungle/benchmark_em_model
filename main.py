@@ -179,6 +179,9 @@ def main():
     training_opts = None
     if args.device == "ipu":
         import poptorch
+        import popdist
+
+        popdist.init()
 
         logger.log("Using IPU.")
         cache_dir = utils.mkdir_if_not_exist("./tmp")
