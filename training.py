@@ -7,6 +7,7 @@ import torch.nn.functional as F
 import logger
 import os
 import timer
+import time
 
 
 class TorchTrainer:
@@ -40,6 +41,8 @@ class TorchTrainer:
         last_loss = 0.0
         scaler = torch.cuda.amp.GradScaler()
 
+        total_time = 0
+
         # Here, we use enumerate(training_loader) instead of
         # iter(training_loader) so that we can track the batch
         # index and do some intra-epoch reporting
@@ -48,6 +51,7 @@ class TorchTrainer:
             inputs, labels = data
             inputs, labels = inputs.to(self.device), labels.to(self.device)
 
+            start = time.perf_counter()
             # Zero your gradients for every batch!
             self.optimizer.zero_grad(set_to_none=True)
 
@@ -60,6 +64,7 @@ class TorchTrainer:
             scaler.scale(loss).backward()
             scaler.step(self.optimizer)
             scaler.update()
+            total_time += time.perf_counter() - start
 
             # loss.backward()
             # self.optimizer.step()
@@ -69,6 +74,7 @@ class TorchTrainer:
 
         last_loss = running_loss / (i + 1)  # loss per batch
         logger.log("  batch {} loss: {}".format(i + 1, last_loss))
+        logger.log("  batch {} time: {}".format(i + 1, total_time))
         # tb_x = epoch_index * len(self.training_loader) + i + 1
         # self.writer.add_scalar("Loss/train", last_loss, tb_x)
 

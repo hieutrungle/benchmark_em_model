@@ -9,13 +9,19 @@ import logger
 import models.efficientnet as efficientnet
 from torchinfo import summary
 import torchvision.transforms as transforms
-import torchvision.datasets as datasets
 import os
 import data_io
 import torch.optim as optim
 import training
 from torch.utils.data.dataloader import default_collate
 import timer
+
+import torch.multiprocessing as mp
+from torch.utils.data.distributed import DistributedSampler
+from torch.nn.parallel import DistributedDataParallel as DDP
+from torch.distributed import init_process_group, destroy_process_group
+import os
+
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 if DEVICE.type != "cpu":
@@ -105,6 +111,18 @@ def ipu_training_options(
     return opts
 
 
+def ddp_setup(rank: int, world_size: int):
+    """
+    Args:
+        rank: Unique identifier of each process
+        world_size: Total number of processes
+    """
+    os.environ["MASTER_ADDR"] = "localhost"
+    os.environ["MASTER_PORT"] = "12355"
+    init_process_group(backend="nccl", rank=rank, world_size=world_size)
+    torch.cuda.set_device(rank)
+
+
 def main():
     torch.cuda.empty_cache()
     args = create_argparser().parse_args()
@@ -113,32 +131,10 @@ def main():
 
     torch.multiprocessing.set_start_method("spawn")
 
-    # Model Initialization
-    # model = efficientnet.efficientnet_model(num_classes=10)
-
-    # model = efficientnet.efficientnet_prediction_model(num_classes=1)
-
-    # weight_path = "/home/xubuntu/research/EfficientNetV2/saved_models/061_1/checkpoints/sst-epoch=000-val_loss=0.01345.pt"
     # create model
     kwargs = {"device": args.device}
     model = efficientnet.efficientnet_prediction_model(num_classes=1, **kwargs)
-    # load weight
-    # checkpoint = torch.load(weight_path, map_location=DEVICE)
-    # model.load_state_dict(checkpoint)
 
-    # input shape is of 2 dimensions, however, the model expects 4 dimensions
-    input_shape = (1, 3, 256, 256)
-    # summary(
-    #     model,
-    #     input_shape,
-    #     depth=4,  # go into 2 sub layers depth
-    #     col_names=(
-    #         "input_size",
-    #         "output_size",
-    #         "num_params",
-    #     ),
-    #     row_settings=("depth", "ascii_only"),
-    # )
     if DEVICE.type == "cuda" and NUM_GPUS > 0:
         model = model.to("cuda")
     else:
@@ -229,7 +225,7 @@ def main():
             train_ds,
             batch_size=args.batch_size,
             shuffle=True,
-            num_workers=16,
+            num_workers=4,
             pin_memory=True,
             drop_last=True,
         )
@@ -237,7 +233,7 @@ def main():
             test_ds,
             batch_size=args.batch_size,
             shuffle=False,
-            num_workers=16,
+            num_workers=4,
             pin_memory=False,
             drop_last=False,
         )
