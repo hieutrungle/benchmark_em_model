@@ -15,6 +15,7 @@ import data_io
 import torch.optim as optim
 import training
 from torch.utils.data.dataloader import default_collate
+import timer
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 if DEVICE.type != "cpu":
@@ -237,9 +238,15 @@ def main():
             batch_size=args.batch_size,
             shuffle=False,
             num_workers=16,
-            pin_memory=True,
+            pin_memory=False,
             drop_last=False,
         )
+
+        with timer.Timer(logger_fn=logger.log):
+            for i, data in enumerate(train_loader):
+                inputs, labels = data
+                inputs, labels = inputs.to(DEVICE), labels.to(DEVICE)
+
         model = torch.compile(model, fullgraph=True)
 
     utils.mkdir_if_not_exist(args.model_path)

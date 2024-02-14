@@ -38,6 +38,7 @@ class TorchTrainer:
     def train_one_epoch(self, epoch_index):
         running_loss = 0.0
         last_loss = 0.0
+        scaler = torch.cuda.amp.GradScaler()
 
         # Here, we use enumerate(training_loader) instead of
         # iter(training_loader) so that we can track the batch
@@ -51,14 +52,17 @@ class TorchTrainer:
             self.optimizer.zero_grad(set_to_none=True)
 
             # Make predictions for this batch
-            outputs = self.model(inputs)
+            with torch.cuda.amp.autocast():
+                outputs = self.model(inputs)
 
-            # Compute the loss and its gradients
-            loss = self.loss_fn(outputs, labels).float()
-            loss.backward()
+                # Compute the loss and its gradients
+                loss = self.loss_fn(outputs, labels).float()
+            scaler.scale(loss).backward()
+            scaler.step(self.optimizer)
+            scaler.update()
 
-            # Adjust learning weights
-            self.optimizer.step()
+            # loss.backward()
+            # self.optimizer.step()
 
             # Gather data and report
             running_loss += loss.item()
