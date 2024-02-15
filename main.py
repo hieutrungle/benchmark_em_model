@@ -68,24 +68,6 @@ def ipu_training_options(
     # Cache compiled executable to disk
     opts.enableExecutableCaching(cache_dir)
 
-    # Setting system specific options
-    # On-chip Replicated Tensor Sharding of Optimizer State
-    # opts.TensorLocations.setOptimizerLocation(
-    #     poptorch.TensorLocationSettings()
-    #     # Optimizer state lives on IPU if running on a POD16
-    #     .useOnChipStorage(number_of_ipus == 16)
-    #     # Optimizer state sharded between replicas with zero-redundancy
-    #     .useReplicatedTensorSharding(number_of_ipus == 16)
-    # )
-
-    # # Available Transient Memory For matmuls and convolutions operations dependent on system type
-    # if number_of_ipus == 16:
-    #     amps = [0.08, 0.28, 0.32, 0.32, 0.36, 0.38, 0.4, 0.1]
-    # else:
-    #     amps = [0.15, 0.18, 0.2, 0.25]
-
-    # opts.setAvailableMemoryProportion({f"IPU{i}": mp for i, mp in enumerate(amps)})
-
     ## Advanced performance options ##
 
     # Only stream needed tensors back to host
