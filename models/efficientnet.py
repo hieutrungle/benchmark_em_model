@@ -380,10 +380,8 @@ class EfficientNet(nn.Module):
 
     def _forward_impl(self, x: Tensor) -> Tensor:
         x = self.features(x)
-
         x = self.avgpool(x)
         x = torch.flatten(x, 1)
-
         x = self.classifier(x)
 
         return x
@@ -409,12 +407,9 @@ class PipelinedEfficienNet(EfficientNet):
         layer_ipu = get_layer_ipu(ipu_config["layers_per_ipu"])
         print("-------------------- Device Allocation --------------------")
 
-        # self.bert.embeddings = poptorch.BeginBlock(self.bert.embeddings, "Embedding", ipu_id=0)
         layers = list(self.features.children())
         for index, layer in enumerate(layers):
             ipu_id = layer_ipu[index]
-            # if index != self.config.num_hidden_layers - 1:
-            #     checkpoint_outputs(layer)
             layer = poptorch.BeginBlock(layer, f"self.features{index}", ipu_id=ipu_id)
             print(f"self.features {index:<2} --> IPU {ipu_id}")
 
@@ -446,8 +441,8 @@ def _efficientnet(
 ) -> EfficientNet:
     if weights is not None:
         _ovewrite_named_param(kwargs, "num_classes", len(weights.meta["categories"]))
-    device = kwargs.get("device", None)
 
+    device = kwargs.get("device", None)
     if device == "ipu":
         model = PipelinedEfficienNet(
             inverted_residual_setting, dropout, last_channel=last_channel, **kwargs
