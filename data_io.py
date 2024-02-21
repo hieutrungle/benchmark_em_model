@@ -381,7 +381,7 @@ class ImageCurrentDataset(data.Dataset):
         self.image_files = glob.glob(os.path.join(self.image_dir, "*png"))
         utils.sort_nicely(self.image_files)
 
-        current_file = os.path.join(self.root, "current.xlsx")
+        current_file = os.path.join(self.root, "conductivity.xlsx")
         self.output = pd.read_excel(current_file, header=None)
         # to numpy array
         self.output = np.array(self.output, dtype=np.float32)
