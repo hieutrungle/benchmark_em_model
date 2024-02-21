@@ -195,7 +195,7 @@ def main():
         elif args.num_ipus == 2:
             layers_per_ipu = [6, 2]
         elif args.num_ipus == 4:
-            layers_per_ipu = [4, 2, 1, 1]
+            layers_per_ipu = [5, 1, 1, 1]
         elif args.num_ipus == 8:
             layers_per_ipu = [1, 1, 1, 1, 1, 1, 1, 1]
         ipu_config = {"layers_per_ipu": layers_per_ipu}
@@ -243,8 +243,8 @@ def main():
 def create_argparser():
     """Parses command line arguments."""
     defaults = dict(
-        data_dir="./data/061/train",
-        test_dir="./data/061/test",
+        data_dir="./data/256/images/25/256_1/train",
+        test_dir="./data/256/images/25/256_1/test",
         model_path="./saved_models/061",
         verbose=True,
         batch_size=64,
