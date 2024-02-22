@@ -18,11 +18,12 @@ import timer
 
 import torch.nn as nn
 import torch.multiprocessing as mp
+import torch.distributed as dist
 from torch.utils.data.distributed import DistributedSampler
 from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.distributed import init_process_group, destroy_process_group
 import os
-
+import functools
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 if DEVICE.type != "cpu":
@@ -94,30 +95,15 @@ def ipu_training_options(
     return opts
 
 
-def ddp_setup(rank: int, world_size: int):
-    """
-    Args:
-        rank: Unique identifier of each process
-        world_size: Total number of processes
-    """
-    os.environ["MASTER_ADDR"] = "localhost"
-    os.environ["MASTER_PORT"] = "12355"
-    init_process_group(backend="nccl", rank=rank, world_size=world_size)
-    torch.cuda.set_device(rank)
+def run_ipu(args):
+    import poptorch
+    import popdist
 
-
-def main():
-    torch.cuda.empty_cache()
-    args = create_argparser().parse_args()
-    logger.configure(dir="./logs")
-    utils.log_args_and_device_info(args)
-
-    torch.multiprocessing.set_start_method("spawn")
+    popdist.init()
 
     # create model
     kwargs = {"device": args.device}
     model = efficientnet.efficientnet_prediction_model(num_classes=1, **kwargs)
-    model = model.to("cpu")
 
     train_dir = args.data_dir
     train_ds = data_io.ImageCurrentDataset(
@@ -149,85 +135,42 @@ def main():
         weight_decay=args.weight_decay,
         amsgrad=False,
     )
-    train_loader = None
-    test_loader = None
-    training_opts = None
-    if args.device == "ipu":
-        import poptorch
-        import popdist
 
-        popdist.init()
+    cache_dir = utils.mkdir_if_not_exist("./tmp")
+    training_opts = ipu_training_options(
+        gradient_accumulation=args.gradient_accumulation,
+        replication_factor=args.replication_factor,
+        device_iterations=args.device_iterations,
+        number_of_ipus=args.num_ipus,
+        cache_dir=cache_dir,
+    )
+    train_loader = poptorch.DataLoader(
+        options=training_opts,
+        dataset=train_ds,
+        batch_size=args.batch_size,
+        shuffle=True,
+        drop_last=True,
+    )
+    test_loader = poptorch.DataLoader(
+        options=training_opts,
+        dataset=test_ds,
+        batch_size=args.batch_size,
+        shuffle=False,
+        drop_last=False,
+    )
 
-        logger.log("Using IPU.")
-        cache_dir = utils.mkdir_if_not_exist("./tmp")
-        training_opts = ipu_training_options(
-            gradient_accumulation=args.gradient_accumulation,
-            replication_factor=args.replication_factor,
-            device_iterations=args.device_iterations,
-            number_of_ipus=args.num_ipus,
-            cache_dir=cache_dir,
-        )
-        train_loader = poptorch.DataLoader(
-            options=training_opts,
-            dataset=train_ds,
-            batch_size=args.batch_size,
-            shuffle=True,
-            drop_last=True,
-        )
-        test_loader = poptorch.DataLoader(
-            options=training_opts,
-            dataset=test_ds,
-            batch_size=args.batch_size,
-            shuffle=False,
-            drop_last=False,
-        )
-
+    layers_per_ipu = [8]
+    if args.num_ipus == 1:
         layers_per_ipu = [8]
-        if args.num_ipus == 1:
-            layers_per_ipu = [8]
-        elif args.num_ipus == 2:
-            layers_per_ipu = [6, 2]
-        elif args.num_ipus == 4:
-            layers_per_ipu = [5, 1, 1, 1]
-        elif args.num_ipus == 8:
-            layers_per_ipu = [1, 1, 1, 1, 1, 1, 1, 1]
-        ipu_config = {"layers_per_ipu": layers_per_ipu}
-        model.parallelize(ipu_config).train()
-        model = poptorch.trainingModel(
-            model, options=training_opts, optimizer=optimizer
-        )
-    else:
-        logger.log("Using CUDA and compiling model.")
-        torch.backends.cudnn.benchmark = True
-        train_loader = torch.utils.data.DataLoader(
-            train_ds,
-            batch_size=args.batch_size,
-            shuffle=True,
-            pin_memory=True,
-            drop_last=True,
-        )
-        test_loader = torch.utils.data.DataLoader(
-            test_ds,
-            batch_size=args.batch_size,
-            shuffle=False,
-            pin_memory=False,
-            drop_last=False,
-        )
-
-        # multiple GPUs
-        if torch.cuda.device_count() > 1:
-            world_rank = torch.distributed.get_rank()
-            print("Let's use", torch.cuda.device_count(), "GPUs!")
-            # dim = 0 [30, xxx] -> [10, ...], [10, ...], [10, ...] on 3 GPUs
-            model = nn.DataParallel(model)
-        model = model.to("cuda:0")
-
-        with timer.Timer(logger_fn=logger.log):
-            for i, data in enumerate(train_loader):
-                inputs, labels = data
-                inputs, labels = inputs.to(DEVICE), labels.to(DEVICE)
-
-        model = torch.compile(model, fullgraph=True)
+    elif args.num_ipus == 2:
+        layers_per_ipu = [6, 2]
+    elif args.num_ipus == 4:
+        layers_per_ipu = [5, 1, 1, 1]
+    elif args.num_ipus == 8:
+        layers_per_ipu = [1, 1, 1, 1, 1, 1, 1, 1]
+    ipu_config = {"layers_per_ipu": layers_per_ipu}
+    model.parallelize(ipu_config).train()
+    model = poptorch.trainingModel(model, options=training_opts, optimizer=optimizer)
 
     utils.mkdir_if_not_exist(args.model_path)
 
@@ -235,10 +178,155 @@ def main():
     trainer = training.TorchTrainer(
         model, train_loader, test_loader, optimizer, DEVICE, args
     )
+    trainer.train_ipu(args.epochs)
+
+
+def get_dataset(args):
+    world_size = dist.get_world_size()
+    train_dir = args.data_dir
+    train_ds = data_io.ImageCurrentDataset(
+        train_dir,
+        transform=transforms.Compose(
+            [
+                transforms.RandomHorizontalFlip(),
+                transforms.RandomVerticalFlip(),
+                transforms.ToTensor(),
+            ]
+        ),
+    )
+    test_dir = args.test_dir
+    test_ds = data_io.ImageCurrentDataset(
+        test_dir,
+        transform=transforms.Compose(
+            [
+                transforms.ToTensor(),
+            ]
+        ),
+    )
+
+    train_sampler = DistributedSampler(
+        train_ds, num_replicas=world_size, shuffle=True, drop_last=True
+    )
+    test_sampler = DistributedSampler(
+        test_ds, num_replicas=world_size, shuffle=False, drop_last=False
+    )
+    batch_size = int(args.batch_size / float(world_size))
+    logger.log(f"Batch size: {batch_size}")
+    logger.log(f"World size: {world_size}")
+    train_loader = torch.utils.data.DataLoader(
+        train_ds,
+        sampler=train_sampler,
+        batch_size=batch_size,
+        pin_memory=True,
+    )
+    test_loader = torch.utils.data.DataLoader(
+        test_ds,
+        sampler=test_sampler,
+        batch_size=batch_size,
+    )
+
+    return train_loader, test_loader
+
+
+def run_cuda(args, rank, world_size):
+    torch.cuda.set_device(rank)
+    torch.cuda.empty_cache()
+    device = torch.device("cuda", rank)
+    torch.backends.cudnn.benchmark = True
+    train_loader, test_loader = get_dataset(args)
+
+    # create model
+    kwargs = {"device": args.device}
+    model = efficientnet.efficientnet_prediction_model(num_classes=1, **kwargs)
+    model.to(device)
+    # use if model contains batchnorm.
+    model = nn.SyncBatchNorm.convert_sync_batchnorm(model)
+    model = torch.compile(model, fullgraph=True)
+    model = DDP(model, device_ids=[rank], output_device=rank)
+
+    optimizer = optim.AdamW(
+        model.parameters(),
+        lr=args.lr,
+        betas=(0.9, 0.999),
+        eps=1e-08,
+        weight_decay=args.weight_decay,
+        amsgrad=False,
+    )
+
+    # Train & Evaluate
+    utils.mkdir_if_not_exist(args.model_path)
+    trainer = training.TorchTrainer(
+        model, train_loader, test_loader, optimizer, DEVICE, args
+    )
+    trainer.train(args.epochs)
+
+    cleanup(rank)
+
+
+def cleanup(rank):
+    # dist.cleanup()
+    dist.destroy_process_group()
+    print(f"Rank {rank} is done.")
+
+
+def setup_for_distributed(is_master):
+    """
+    This function disables printing when not in master process
+    """
+    import builtins as __builtin__
+
+    builtin_print = __builtin__.print
+
+    def print(*args, **kwargs):
+        force = kwargs.pop("force", False)
+        if is_master or force:
+            builtin_print(*args, **kwargs)
+
+    __builtin__.print = print
+
+
+def init_process(
+    args,
+    rank,  # rank of the process
+    world_size,  # number of workers
+    fn,  # function to be run
+    # backend='gloo',# good for single node
+    backend="nccl",  # the best for CUDA
+    # backend="gloo",
+):
+    # information used for rank 0
+    os.environ["MASTER_ADDR"] = "127.0.0.1"
+    os.environ["MASTER_PORT"] = "29500"
+    dist.init_process_group(backend, rank=rank, world_size=world_size)
+    dist.barrier()
+    setup_for_distributed(rank == 0)
+    fn(args, rank, world_size)
+
+
+def main():
+    torch.cuda.empty_cache()
+    args = create_argparser().parse_args()
+    logger.configure(dir="./logs")
+    utils.log_args_and_device_info(args)
+
     if args.device == "ipu":
-        trainer.train_ipu(args.epochs)
+        logger.log("Using IPU and compiling model.")
+        run_ipu(args)
+        return
     else:
-        trainer.train(args.epochs)
+        logger.log("Using CUDA and compiling model.")
+        world_size = torch.cuda.device_count()
+        logger.log(f"World size: {world_size}")
+        processes = []
+        mp.set_start_method("spawn")
+
+        for rank in range(world_size):
+            p = mp.Process(target=init_process, args=(args, rank, world_size, run_cuda))
+            p.start()
+            processes.append(p)
+
+        for p in processes:
+            p.join()
 
 
 def create_argparser():

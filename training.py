@@ -8,6 +8,7 @@ import logger
 import os
 import timer
 import time
+import torch.distributed as dist
 
 
 class TorchTrainer:
@@ -35,50 +36,49 @@ class TorchTrainer:
 
         torch.set_float32_matmul_precision("high")
 
+    def average_gradients(self, model):
+        size = float(dist.get_world_size())
+        for param in model.parameters():
+            dist.all_reduce(param.grad.data, op=dist.ReduceOp.SUM)
+            param.grad.data /= size
+
+    def reduce_dict(self, input_dict, average=True):
+        world_size = float(dist.get_world_size())
+        names, values = [], []
+        for k in sorted(input_dict.keys()):
+            names.append(k)
+            values.append(input_dict[k])
+        values = torch.stack(values, dim=0)
+        dist.all_reduce(values, op=dist.ReduceOp.SUM)
+        if average:
+            values /= world_size
+        reduced_dict = {k: v for k, v in zip(names, values)}
+        return reduced_dict
+
     @timer.Timer(logger_fn=logger.log)
     def train_one_epoch(self, epoch_index):
         running_loss = 0.0
-        last_loss = 0.0
         scaler = torch.cuda.amp.GradScaler()
+        device = torch.device(f"cuda:{dist.get_rank()}")
 
-        total_time = 0
-
-        # Here, we use enumerate(training_loader) instead of
-        # iter(training_loader) so that we can track the batch
-        # index and do some intra-epoch reporting
         for i, data in enumerate(self.training_loader):
-            # Every data instance is an input + label pair
             inputs, labels = data
-            inputs, labels = inputs.to(self.device), labels.to(self.device)
+            inputs, labels = inputs.to(device), labels.to(device)
 
-            start = time.perf_counter()
-            # Zero your gradients for every batch!
             self.optimizer.zero_grad(set_to_none=True)
-
-            # Make predictions for this batch
             with torch.cuda.amp.autocast():
                 outputs = self.model(inputs)
-
-                # Compute the loss and its gradients
                 loss = self.loss_fn(outputs, labels).float()
             scaler.scale(loss).backward()
+            # self.average_gradients(self.model)
             scaler.step(self.optimizer)
             scaler.update()
-            total_time += time.perf_counter() - start
 
-            # loss.backward()
-            # self.optimizer.step()
-
-            # Gather data and report
             running_loss += loss.item()
 
-        last_loss = running_loss / (i + 1)  # loss per batch
-        logger.log("  batch {} loss: {}".format(i + 1, last_loss))
-        logger.log("  batch {} time: {}".format(i + 1, total_time))
-        # tb_x = epoch_index * len(self.training_loader) + i + 1
-        # self.writer.add_scalar("Loss/train", last_loss, tb_x)
+        running_loss = running_loss / (i + 1)  # loss per batch
 
-        return last_loss
+        return running_loss
 
     def train(self, epochs):
         best_vloss = float("inf")
@@ -90,8 +90,6 @@ class TorchTrainer:
             avg_loss = self.train_one_epoch(epoch)
 
             running_vloss = 0.0
-            # Set the model to evaluation mode, disabling dropout and using population
-            # statistics for batch normalization.
             self.model.eval()
 
             # Disable gradient computation and reduce memory consumption.
@@ -107,8 +105,6 @@ class TorchTrainer:
             avg_vloss = running_vloss / (i + 1)
             logger.log("LOSS train {} valid {}".format(avg_loss, avg_vloss))
 
-            # Log the running loss averaged per batch
-            # for both training and validation
             self.writer.add_scalars(
                 "Training vs. Validation Loss",
                 {"Training": avg_loss, "Validation": avg_vloss},
@@ -116,13 +112,8 @@ class TorchTrainer:
             )
             self.writer.flush()
 
-            # Track best performance, and save the model's state
             if avg_vloss < best_vloss:
                 best_vloss = avg_vloss
-                # model_path = os.path.join(
-                #     self.args.model_path,
-                #     "model_{}_{}".format(self.timestamp, epoch) + ".pt",
-                # )
                 model_path = os.path.join(
                     self.args.model_path,
                     "model" + ".pt",
