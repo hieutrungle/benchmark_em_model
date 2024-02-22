@@ -1,0 +1,1258 @@
+python main.py --device ipu --batch_size 2 --device_iterations 10 --replication_factor 1 --gradient_accumulation 10 --num_ipus 2
+Logging to ./logs/2024-02-22-13-59-36-466452
+*********************** TRAIN BEGIN ***********************
+
+data_dir = './data/256/images/25/256_1/train'
+test_dir = './data/256/images/25/256_1/test'
+model_path = './saved_models/061'
+verbose = True
+batch_size = 2
+epochs = 3
+lr = 0.001
+warm_up_portion = 0.2
+weight_decay = 0
+momentum = 0.9
+log_interval = 10
+resume = ''
+iter = -1
+conductivity = 1
+device = 'ipu'
+device_iterations = 10
+replication_factor = 1
+gradient_accumulation = 10
+num_ipus = 2
+
+Pytorch version: 2.0.1+cpu
+
+weights: DEFAULT
+progress: True
+Found 1216 images in ./data/256/images/25/256_1/train/images
+Found 1216 outputs in ./data/256/images/25/256_1/train/conductivity.xlsx
+Found 152 images in ./data/256/images/25/256_1/test/images
+Found 152 outputs in ./data/256/images/25/256_1/test/conductivity.xlsx
+Using IPU.
+-------------------- Device Allocation --------------------
+self.features 0  --> IPU 0
+self.features 1  --> IPU 0
+self.features 2  --> IPU 0
+self.features 3  --> IPU 0
+self.features 4  --> IPU 0
+self.features 5  --> IPU 0
+self.features 6  --> IPU 1
+self.features 7  --> IPU 1
+AdaptiveAvgPool2d --> IPU 1
+Linear --> IPU 1
+EPOCH 1:
+LOSS train 0.02057533711194992
+Elapsed time: 448.0613 seconds
+EPOCH 2:
+LOSS train 0.009579554200172424
+Elapsed time: 4.4165 seconds
+EPOCH 3:
+LOSS train 0.03472089022397995
+Elapsed time: 4.4180 seconds
+python main.py --device ipu --batch_size 2 --device_iterations 10 --replication_factor 1 --gradient_accumulation 20 --num_ipus 2
+Logging to ./logs/2024-02-22-14-07-29-091306
+*********************** TRAIN BEGIN ***********************
+
+data_dir = './data/256/images/25/256_1/train'
+test_dir = './data/256/images/25/256_1/test'
+model_path = './saved_models/061'
+verbose = True
+batch_size = 2
+epochs = 3
+lr = 0.001
+warm_up_portion = 0.2
+weight_decay = 0
+momentum = 0.9
+log_interval = 10
+resume = ''
+iter = -1
+conductivity = 1
+device = 'ipu'
+device_iterations = 10
+replication_factor = 1
+gradient_accumulation = 20
+num_ipus = 2
+
+Pytorch version: 2.0.1+cpu
+
+weights: DEFAULT
+progress: True
+Found 1216 images in ./data/256/images/25/256_1/train/images
+Found 1216 outputs in ./data/256/images/25/256_1/train/conductivity.xlsx
+Found 152 images in ./data/256/images/25/256_1/test/images
+Found 152 outputs in ./data/256/images/25/256_1/test/conductivity.xlsx
+Using IPU.
+-------------------- Device Allocation --------------------
+self.features 0  --> IPU 0
+self.features 1  --> IPU 0
+self.features 2  --> IPU 0
+self.features 3  --> IPU 0
+self.features 4  --> IPU 0
+self.features 5  --> IPU 0
+self.features 6  --> IPU 1
+self.features 7  --> IPU 1
+AdaptiveAvgPool2d --> IPU 1
+Linear --> IPU 1
+EPOCH 1:
+LOSS train 0.10015678405761719
+Elapsed time: 434.6929 seconds
+EPOCH 2:
+LOSS train 0.048847638070583344
+Elapsed time: 4.2213 seconds
+EPOCH 3:
+LOSS train 0.04477514326572418
+Elapsed time: 4.2322 seconds
+python main.py --device ipu --batch_size 2 --device_iterations 10 --replication_factor 1 --gradient_accumulation 40 --num_ipus 2
+Logging to ./logs/2024-02-22-14-15-06-411057
+*********************** TRAIN BEGIN ***********************
+
+data_dir = './data/256/images/25/256_1/train'
+test_dir = './data/256/images/25/256_1/test'
+model_path = './saved_models/061'
+verbose = True
+batch_size = 2
+epochs = 3
+lr = 0.001
+warm_up_portion = 0.2
+weight_decay = 0
+momentum = 0.9
+log_interval = 10
+resume = ''
+iter = -1
+conductivity = 1
+device = 'ipu'
+device_iterations = 10
+replication_factor = 1
+gradient_accumulation = 40
+num_ipus = 2
+
+Pytorch version: 2.0.1+cpu
+
+weights: DEFAULT
+progress: True
+Found 1216 images in ./data/256/images/25/256_1/train/images
+Found 1216 outputs in ./data/256/images/25/256_1/train/conductivity.xlsx
+Found 152 images in ./data/256/images/25/256_1/test/images
+Found 152 outputs in ./data/256/images/25/256_1/test/conductivity.xlsx
+Using IPU.
+-------------------- Device Allocation --------------------
+self.features 0  --> IPU 0
+self.features 1  --> IPU 0
+self.features 2  --> IPU 0
+self.features 3  --> IPU 0
+self.features 4  --> IPU 0
+self.features 5  --> IPU 0
+self.features 6  --> IPU 1
+self.features 7  --> IPU 1
+AdaptiveAvgPool2d --> IPU 1
+Linear --> IPU 1
+EPOCH 1:
+LOSS train 0.31123995780944824
+Elapsed time: 438.1226 seconds
+EPOCH 2:
+LOSS train 0.2090873420238495
+Elapsed time: 3.0630 seconds
+EPOCH 3:
+LOSS train 0.07856425642967224
+Elapsed time: 2.8666 seconds
+python main.py --device ipu --batch_size 2 --device_iterations 10 --replication_factor 1 --gradient_accumulation 60 --num_ipus 2
+Logging to ./logs/2024-02-22-14-22-46-342757
+*********************** TRAIN BEGIN ***********************
+
+data_dir = './data/256/images/25/256_1/train'
+test_dir = './data/256/images/25/256_1/test'
+model_path = './saved_models/061'
+verbose = True
+batch_size = 2
+epochs = 3
+lr = 0.001
+warm_up_portion = 0.2
+weight_decay = 0
+momentum = 0.9
+log_interval = 10
+resume = ''
+iter = -1
+conductivity = 1
+device = 'ipu'
+device_iterations = 10
+replication_factor = 1
+gradient_accumulation = 60
+num_ipus = 2
+
+Pytorch version: 2.0.1+cpu
+
+weights: DEFAULT
+progress: True
+Found 1216 images in ./data/256/images/25/256_1/train/images
+Found 1216 outputs in ./data/256/images/25/256_1/train/conductivity.xlsx
+Found 152 images in ./data/256/images/25/256_1/test/images
+Found 152 outputs in ./data/256/images/25/256_1/test/conductivity.xlsx
+Using IPU.
+-------------------- Device Allocation --------------------
+self.features 0  --> IPU 0
+self.features 1  --> IPU 0
+self.features 2  --> IPU 0
+self.features 3  --> IPU 0
+self.features 4  --> IPU 0
+self.features 5  --> IPU 0
+self.features 6  --> IPU 1
+self.features 7  --> IPU 1
+AdaptiveAvgPool2d --> IPU 1
+Linear --> IPU 1
+EPOCH 1:
+LOSS train 0.4849008321762085
+Elapsed time: 442.8626 seconds
+EPOCH 2:
+LOSS train 0.0676233172416687
+Elapsed time: 4.4331 seconds
+EPOCH 3:
+LOSS train 0.043250568211078644
+Elapsed time: 4.2879 seconds
+python main.py --device ipu --batch_size 2 --device_iterations 10 --replication_factor 1 --gradient_accumulation 10 --num_ipus 4
+Logging to ./logs/2024-02-22-14-30-35-321274
+*********************** TRAIN BEGIN ***********************
+
+data_dir = './data/256/images/25/256_1/train'
+test_dir = './data/256/images/25/256_1/test'
+model_path = './saved_models/061'
+verbose = True
+batch_size = 2
+epochs = 3
+lr = 0.001
+warm_up_portion = 0.2
+weight_decay = 0
+momentum = 0.9
+log_interval = 10
+resume = ''
+iter = -1
+conductivity = 1
+device = 'ipu'
+device_iterations = 10
+replication_factor = 1
+gradient_accumulation = 10
+num_ipus = 4
+
+Pytorch version: 2.0.1+cpu
+
+weights: DEFAULT
+progress: True
+Found 1216 images in ./data/256/images/25/256_1/train/images
+Found 1216 outputs in ./data/256/images/25/256_1/train/conductivity.xlsx
+Found 152 images in ./data/256/images/25/256_1/test/images
+Found 152 outputs in ./data/256/images/25/256_1/test/conductivity.xlsx
+Using IPU.
+-------------------- Device Allocation --------------------
+self.features 0  --> IPU 0
+self.features 1  --> IPU 0
+self.features 2  --> IPU 0
+self.features 3  --> IPU 0
+self.features 4  --> IPU 0
+self.features 5  --> IPU 1
+self.features 6  --> IPU 2
+self.features 7  --> IPU 3
+AdaptiveAvgPool2d --> IPU 3
+Linear --> IPU 3
+EPOCH 1:
+LOSS train 0.04512506723403931
+Elapsed time: 460.1588 seconds
+EPOCH 2:
+LOSS train 0.06478235870599747
+Elapsed time: 3.6018 seconds
+EPOCH 3:
+LOSS train 0.05495549738407135
+Elapsed time: 3.5688 seconds
+python main.py --device ipu --batch_size 2 --device_iterations 10 --replication_factor 1 --gradient_accumulation 20 --num_ipus 4
+Logging to ./logs/2024-02-22-14-38-37-074749
+*********************** TRAIN BEGIN ***********************
+
+data_dir = './data/256/images/25/256_1/train'
+test_dir = './data/256/images/25/256_1/test'
+model_path = './saved_models/061'
+verbose = True
+batch_size = 2
+epochs = 3
+lr = 0.001
+warm_up_portion = 0.2
+weight_decay = 0
+momentum = 0.9
+log_interval = 10
+resume = ''
+iter = -1
+conductivity = 1
+device = 'ipu'
+device_iterations = 10
+replication_factor = 1
+gradient_accumulation = 20
+num_ipus = 4
+
+Pytorch version: 2.0.1+cpu
+
+weights: DEFAULT
+progress: True
+Found 1216 images in ./data/256/images/25/256_1/train/images
+Found 1216 outputs in ./data/256/images/25/256_1/train/conductivity.xlsx
+Found 152 images in ./data/256/images/25/256_1/test/images
+Found 152 outputs in ./data/256/images/25/256_1/test/conductivity.xlsx
+Using IPU.
+-------------------- Device Allocation --------------------
+self.features 0  --> IPU 0
+self.features 1  --> IPU 0
+self.features 2  --> IPU 0
+self.features 3  --> IPU 0
+self.features 4  --> IPU 0
+self.features 5  --> IPU 1
+self.features 6  --> IPU 2
+self.features 7  --> IPU 3
+AdaptiveAvgPool2d --> IPU 3
+Linear --> IPU 3
+EPOCH 1:
+LOSS train 0.15915879607200623
+Elapsed time: 453.6226 seconds
+EPOCH 2:
+LOSS train 0.07114994525909424
+Elapsed time: 3.8529 seconds
+EPOCH 3:
+LOSS train 0.04275009036064148
+Elapsed time: 3.8420 seconds
+python main.py --device ipu --batch_size 2 --device_iterations 10 --replication_factor 1 --gradient_accumulation 40 --num_ipus 4
+Logging to ./logs/2024-02-22-14-46-33-062005
+*********************** TRAIN BEGIN ***********************
+
+data_dir = './data/256/images/25/256_1/train'
+test_dir = './data/256/images/25/256_1/test'
+model_path = './saved_models/061'
+verbose = True
+batch_size = 2
+epochs = 3
+lr = 0.001
+warm_up_portion = 0.2
+weight_decay = 0
+momentum = 0.9
+log_interval = 10
+resume = ''
+iter = -1
+conductivity = 1
+device = 'ipu'
+device_iterations = 10
+replication_factor = 1
+gradient_accumulation = 40
+num_ipus = 4
+
+Pytorch version: 2.0.1+cpu
+
+weights: DEFAULT
+progress: True
+Found 1216 images in ./data/256/images/25/256_1/train/images
+Found 1216 outputs in ./data/256/images/25/256_1/train/conductivity.xlsx
+Found 152 images in ./data/256/images/25/256_1/test/images
+Found 152 outputs in ./data/256/images/25/256_1/test/conductivity.xlsx
+Using IPU.
+-------------------- Device Allocation --------------------
+self.features 0  --> IPU 0
+self.features 1  --> IPU 0
+self.features 2  --> IPU 0
+self.features 3  --> IPU 0
+self.features 4  --> IPU 0
+self.features 5  --> IPU 1
+self.features 6  --> IPU 2
+self.features 7  --> IPU 3
+AdaptiveAvgPool2d --> IPU 3
+Linear --> IPU 3
+EPOCH 1:
+LOSS train 0.0886763259768486
+Elapsed time: 453.4153 seconds
+EPOCH 2:
+LOSS train 0.10870461165904999
+Elapsed time: 2.5940 seconds
+EPOCH 3:
+LOSS train 0.13659612834453583
+Elapsed time: 2.2745 seconds
+python main.py --device ipu --batch_size 2 --device_iterations 10 --replication_factor 1 --gradient_accumulation 60 --num_ipus 4
+Logging to ./logs/2024-02-22-14-54-27-546099
+*********************** TRAIN BEGIN ***********************
+
+data_dir = './data/256/images/25/256_1/train'
+test_dir = './data/256/images/25/256_1/test'
+model_path = './saved_models/061'
+verbose = True
+batch_size = 2
+epochs = 3
+lr = 0.001
+warm_up_portion = 0.2
+weight_decay = 0
+momentum = 0.9
+log_interval = 10
+resume = ''
+iter = -1
+conductivity = 1
+device = 'ipu'
+device_iterations = 10
+replication_factor = 1
+gradient_accumulation = 60
+num_ipus = 4
+
+Pytorch version: 2.0.1+cpu
+
+weights: DEFAULT
+progress: True
+Found 1216 images in ./data/256/images/25/256_1/train/images
+Found 1216 outputs in ./data/256/images/25/256_1/train/conductivity.xlsx
+Found 152 images in ./data/256/images/25/256_1/test/images
+Found 152 outputs in ./data/256/images/25/256_1/test/conductivity.xlsx
+Using IPU.
+-------------------- Device Allocation --------------------
+self.features 0  --> IPU 0
+self.features 1  --> IPU 0
+self.features 2  --> IPU 0
+self.features 3  --> IPU 0
+self.features 4  --> IPU 0
+self.features 5  --> IPU 1
+self.features 6  --> IPU 2
+self.features 7  --> IPU 3
+AdaptiveAvgPool2d --> IPU 3
+Linear --> IPU 3
+EPOCH 1:
+LOSS train 0.20791704952716827
+Elapsed time: 455.1203 seconds
+EPOCH 2:
+LOSS train 0.04659610986709595
+Elapsed time: 3.7173 seconds
+EPOCH 3:
+LOSS train 0.029804930090904236
+Elapsed time: 3.3480 seconds
+python main.py --device ipu --batch_size 2 --device_iterations 10 --replication_factor 1 --gradient_accumulation 10 --num_ipus 8
+Logging to ./logs/2024-02-22-15-02-25-878585
+*********************** TRAIN BEGIN ***********************
+
+data_dir = './data/256/images/25/256_1/train'
+test_dir = './data/256/images/25/256_1/test'
+model_path = './saved_models/061'
+verbose = True
+batch_size = 2
+epochs = 3
+lr = 0.001
+warm_up_portion = 0.2
+weight_decay = 0
+momentum = 0.9
+log_interval = 10
+resume = ''
+iter = -1
+conductivity = 1
+device = 'ipu'
+device_iterations = 10
+replication_factor = 1
+gradient_accumulation = 10
+num_ipus = 8
+
+Pytorch version: 2.0.1+cpu
+
+weights: DEFAULT
+progress: True
+Found 1216 images in ./data/256/images/25/256_1/train/images
+Found 1216 outputs in ./data/256/images/25/256_1/train/conductivity.xlsx
+Found 152 images in ./data/256/images/25/256_1/test/images
+Found 152 outputs in ./data/256/images/25/256_1/test/conductivity.xlsx
+Using IPU.
+-------------------- Device Allocation --------------------
+self.features 0  --> IPU 0
+self.features 1  --> IPU 1
+self.features 2  --> IPU 2
+self.features 3  --> IPU 3
+self.features 4  --> IPU 4
+self.features 5  --> IPU 5
+self.features 6  --> IPU 6
+self.features 7  --> IPU 7
+AdaptiveAvgPool2d --> IPU 7
+Linear --> IPU 7
+EPOCH 1:
+Elapsed time: 6.3806 seconds
+python main.py --device ipu --batch_size 2 --device_iterations 10 --replication_factor 1 --gradient_accumulation 20 --num_ipus 8
+Logging to ./logs/2024-02-22-15-02-35-320001
+*********************** TRAIN BEGIN ***********************
+
+data_dir = './data/256/images/25/256_1/train'
+test_dir = './data/256/images/25/256_1/test'
+model_path = './saved_models/061'
+verbose = True
+batch_size = 2
+epochs = 3
+lr = 0.001
+warm_up_portion = 0.2
+weight_decay = 0
+momentum = 0.9
+log_interval = 10
+resume = ''
+iter = -1
+conductivity = 1
+device = 'ipu'
+device_iterations = 10
+replication_factor = 1
+gradient_accumulation = 20
+num_ipus = 8
+
+Pytorch version: 2.0.1+cpu
+
+weights: DEFAULT
+progress: True
+Found 1216 images in ./data/256/images/25/256_1/train/images
+Found 1216 outputs in ./data/256/images/25/256_1/train/conductivity.xlsx
+Found 152 images in ./data/256/images/25/256_1/test/images
+Found 152 outputs in ./data/256/images/25/256_1/test/conductivity.xlsx
+Using IPU.
+-------------------- Device Allocation --------------------
+self.features 0  --> IPU 0
+self.features 1  --> IPU 1
+self.features 2  --> IPU 2
+self.features 3  --> IPU 3
+self.features 4  --> IPU 4
+self.features 5  --> IPU 5
+self.features 6  --> IPU 6
+self.features 7  --> IPU 7
+AdaptiveAvgPool2d --> IPU 7
+Linear --> IPU 7
+EPOCH 1:
+LOSS train 0.06099563091993332
+Elapsed time: 506.4130 seconds
+EPOCH 2:
+LOSS train 0.04205901920795441
+Elapsed time: 3.3601 seconds
+EPOCH 3:
+LOSS train 0.06720486283302307
+Elapsed time: 3.3312 seconds
+python main.py --device ipu --batch_size 2 --device_iterations 10 --replication_factor 1 --gradient_accumulation 40 --num_ipus 8
+Logging to ./logs/2024-02-22-15-11-25-070722
+*********************** TRAIN BEGIN ***********************
+
+data_dir = './data/256/images/25/256_1/train'
+test_dir = './data/256/images/25/256_1/test'
+model_path = './saved_models/061'
+verbose = True
+batch_size = 2
+epochs = 3
+lr = 0.001
+warm_up_portion = 0.2
+weight_decay = 0
+momentum = 0.9
+log_interval = 10
+resume = ''
+iter = -1
+conductivity = 1
+device = 'ipu'
+device_iterations = 10
+replication_factor = 1
+gradient_accumulation = 40
+num_ipus = 8
+
+Pytorch version: 2.0.1+cpu
+
+weights: DEFAULT
+progress: True
+Found 1216 images in ./data/256/images/25/256_1/train/images
+Found 1216 outputs in ./data/256/images/25/256_1/train/conductivity.xlsx
+Found 152 images in ./data/256/images/25/256_1/test/images
+Found 152 outputs in ./data/256/images/25/256_1/test/conductivity.xlsx
+Using IPU.
+-------------------- Device Allocation --------------------
+self.features 0  --> IPU 0
+self.features 1  --> IPU 1
+self.features 2  --> IPU 2
+self.features 3  --> IPU 3
+self.features 4  --> IPU 4
+self.features 5  --> IPU 5
+self.features 6  --> IPU 6
+self.features 7  --> IPU 7
+AdaptiveAvgPool2d --> IPU 7
+Linear --> IPU 7
+EPOCH 1:
+LOSS train 0.2414371520280838
+Elapsed time: 529.9357 seconds
+EPOCH 2:
+LOSS train 0.10188289731740952
+Elapsed time: 2.2753 seconds
+EPOCH 3:
+LOSS train 0.10198122262954712
+Elapsed time: 2.1748 seconds
+python main.py --device ipu --batch_size 2 --device_iterations 10 --replication_factor 1 --gradient_accumulation 60 --num_ipus 8
+Logging to ./logs/2024-02-22-15-20-36-479000
+*********************** TRAIN BEGIN ***********************
+
+data_dir = './data/256/images/25/256_1/train'
+test_dir = './data/256/images/25/256_1/test'
+model_path = './saved_models/061'
+verbose = True
+batch_size = 2
+epochs = 3
+lr = 0.001
+warm_up_portion = 0.2
+weight_decay = 0
+momentum = 0.9
+log_interval = 10
+resume = ''
+iter = -1
+conductivity = 1
+device = 'ipu'
+device_iterations = 10
+replication_factor = 1
+gradient_accumulation = 60
+num_ipus = 8
+
+Pytorch version: 2.0.1+cpu
+
+weights: DEFAULT
+progress: True
+Found 1216 images in ./data/256/images/25/256_1/train/images
+Found 1216 outputs in ./data/256/images/25/256_1/train/conductivity.xlsx
+Found 152 images in ./data/256/images/25/256_1/test/images
+Found 152 outputs in ./data/256/images/25/256_1/test/conductivity.xlsx
+Using IPU.
+-------------------- Device Allocation --------------------
+self.features 0  --> IPU 0
+self.features 1  --> IPU 1
+self.features 2  --> IPU 2
+self.features 3  --> IPU 3
+self.features 4  --> IPU 4
+self.features 5  --> IPU 5
+self.features 6  --> IPU 6
+self.features 7  --> IPU 7
+AdaptiveAvgPool2d --> IPU 7
+Linear --> IPU 7
+EPOCH 1:
+LOSS train 0.1819540560245514
+Elapsed time: 510.9026 seconds
+EPOCH 2:
+LOSS train 0.04929798096418381
+Elapsed time: 3.3807 seconds
+EPOCH 3:
+LOSS train 0.03728795051574707
+Elapsed time: 3.2033 seconds
+python main.py --device ipu --batch_size 2 --device_iterations 20 --replication_factor 1 --gradient_accumulation 10 --num_ipus 2
+Logging to ./logs/2024-02-22-15-29-30-211580
+*********************** TRAIN BEGIN ***********************
+
+data_dir = './data/256/images/25/256_1/train'
+test_dir = './data/256/images/25/256_1/test'
+model_path = './saved_models/061'
+verbose = True
+batch_size = 2
+epochs = 3
+lr = 0.001
+warm_up_portion = 0.2
+weight_decay = 0
+momentum = 0.9
+log_interval = 10
+resume = ''
+iter = -1
+conductivity = 1
+device = 'ipu'
+device_iterations = 20
+replication_factor = 1
+gradient_accumulation = 10
+num_ipus = 2
+
+Pytorch version: 2.0.1+cpu
+
+weights: DEFAULT
+progress: True
+Found 1216 images in ./data/256/images/25/256_1/train/images
+Found 1216 outputs in ./data/256/images/25/256_1/train/conductivity.xlsx
+Found 152 images in ./data/256/images/25/256_1/test/images
+Found 152 outputs in ./data/256/images/25/256_1/test/conductivity.xlsx
+Using IPU.
+-------------------- Device Allocation --------------------
+self.features 0  --> IPU 0
+self.features 1  --> IPU 0
+self.features 2  --> IPU 0
+self.features 3  --> IPU 0
+self.features 4  --> IPU 0
+self.features 5  --> IPU 0
+self.features 6  --> IPU 1
+self.features 7  --> IPU 1
+AdaptiveAvgPool2d --> IPU 1
+Linear --> IPU 1
+EPOCH 1:
+LOSS train 0.07785110175609589
+Elapsed time: 437.4680 seconds
+EPOCH 2:
+LOSS train 0.08675973117351532
+Elapsed time: 4.7679 seconds
+EPOCH 3:
+LOSS train 0.026947200298309326
+Elapsed time: 4.6247 seconds
+python main.py --device ipu --batch_size 2 --device_iterations 20 --replication_factor 1 --gradient_accumulation 20 --num_ipus 2
+Logging to ./logs/2024-02-22-15-37-10-924995
+*********************** TRAIN BEGIN ***********************
+
+data_dir = './data/256/images/25/256_1/train'
+test_dir = './data/256/images/25/256_1/test'
+model_path = './saved_models/061'
+verbose = True
+batch_size = 2
+epochs = 3
+lr = 0.001
+warm_up_portion = 0.2
+weight_decay = 0
+momentum = 0.9
+log_interval = 10
+resume = ''
+iter = -1
+conductivity = 1
+device = 'ipu'
+device_iterations = 20
+replication_factor = 1
+gradient_accumulation = 20
+num_ipus = 2
+
+Pytorch version: 2.0.1+cpu
+
+weights: DEFAULT
+progress: True
+Found 1216 images in ./data/256/images/25/256_1/train/images
+Found 1216 outputs in ./data/256/images/25/256_1/train/conductivity.xlsx
+Found 152 images in ./data/256/images/25/256_1/test/images
+Found 152 outputs in ./data/256/images/25/256_1/test/conductivity.xlsx
+Using IPU.
+-------------------- Device Allocation --------------------
+self.features 0  --> IPU 0
+self.features 1  --> IPU 0
+self.features 2  --> IPU 0
+self.features 3  --> IPU 0
+self.features 4  --> IPU 0
+self.features 5  --> IPU 0
+self.features 6  --> IPU 1
+self.features 7  --> IPU 1
+AdaptiveAvgPool2d --> IPU 1
+Linear --> IPU 1
+EPOCH 1:
+LOSS train 0.07788167893886566
+Elapsed time: 437.6693 seconds
+EPOCH 2:
+LOSS train 0.09621156752109528
+Elapsed time: 3.0077 seconds
+EPOCH 3:
+LOSS train 0.09394121170043945
+Elapsed time: 2.9115 seconds
+python main.py --device ipu --batch_size 2 --device_iterations 20 --replication_factor 1 --gradient_accumulation 40 --num_ipus 2
+Logging to ./logs/2024-02-22-15-44-49-870119
+*********************** TRAIN BEGIN ***********************
+
+data_dir = './data/256/images/25/256_1/train'
+test_dir = './data/256/images/25/256_1/test'
+model_path = './saved_models/061'
+verbose = True
+batch_size = 2
+epochs = 3
+lr = 0.001
+warm_up_portion = 0.2
+weight_decay = 0
+momentum = 0.9
+log_interval = 10
+resume = ''
+iter = -1
+conductivity = 1
+device = 'ipu'
+device_iterations = 20
+replication_factor = 1
+gradient_accumulation = 40
+num_ipus = 2
+
+Pytorch version: 2.0.1+cpu
+
+weights: DEFAULT
+progress: True
+Found 1216 images in ./data/256/images/25/256_1/train/images
+Found 1216 outputs in ./data/256/images/25/256_1/train/conductivity.xlsx
+Found 152 images in ./data/256/images/25/256_1/test/images
+Found 152 outputs in ./data/256/images/25/256_1/test/conductivity.xlsx
+Using IPU.
+-------------------- Device Allocation --------------------
+self.features 0  --> IPU 0
+self.features 1  --> IPU 0
+self.features 2  --> IPU 0
+self.features 3  --> IPU 0
+self.features 4  --> IPU 0
+self.features 5  --> IPU 0
+self.features 6  --> IPU 1
+self.features 7  --> IPU 1
+AdaptiveAvgPool2d --> IPU 1
+Linear --> IPU 1
+EPOCH 1:
+LOSS train inf
+Elapsed time: 0.0009 seconds
+EPOCH 2:
+LOSS train inf
+Elapsed time: 0.0003 seconds
+EPOCH 3:
+LOSS train inf
+Elapsed time: 0.0003 seconds
+python main.py --device ipu --batch_size 2 --device_iterations 20 --replication_factor 1 --gradient_accumulation 60 --num_ipus 2
+Logging to ./logs/2024-02-22-15-44-52-845449
+*********************** TRAIN BEGIN ***********************
+
+data_dir = './data/256/images/25/256_1/train'
+test_dir = './data/256/images/25/256_1/test'
+model_path = './saved_models/061'
+verbose = True
+batch_size = 2
+epochs = 3
+lr = 0.001
+warm_up_portion = 0.2
+weight_decay = 0
+momentum = 0.9
+log_interval = 10
+resume = ''
+iter = -1
+conductivity = 1
+device = 'ipu'
+device_iterations = 20
+replication_factor = 1
+gradient_accumulation = 60
+num_ipus = 2
+
+Pytorch version: 2.0.1+cpu
+
+weights: DEFAULT
+progress: True
+Found 1216 images in ./data/256/images/25/256_1/train/images
+Found 1216 outputs in ./data/256/images/25/256_1/train/conductivity.xlsx
+Found 152 images in ./data/256/images/25/256_1/test/images
+Found 152 outputs in ./data/256/images/25/256_1/test/conductivity.xlsx
+Using IPU.
+-------------------- Device Allocation --------------------
+self.features 0  --> IPU 0
+self.features 1  --> IPU 0
+self.features 2  --> IPU 0
+self.features 3  --> IPU 0
+self.features 4  --> IPU 0
+self.features 5  --> IPU 0
+self.features 6  --> IPU 1
+self.features 7  --> IPU 1
+AdaptiveAvgPool2d --> IPU 1
+Linear --> IPU 1
+EPOCH 1:
+LOSS train inf
+Elapsed time: 0.0009 seconds
+EPOCH 2:
+LOSS train inf
+Elapsed time: 0.0003 seconds
+EPOCH 3:
+LOSS train inf
+Elapsed time: 0.0003 seconds
+python main.py --device ipu --batch_size 2 --device_iterations 20 --replication_factor 1 --gradient_accumulation 10 --num_ipus 4
+Logging to ./logs/2024-02-22-15-44-55-812606
+*********************** TRAIN BEGIN ***********************
+
+data_dir = './data/256/images/25/256_1/train'
+test_dir = './data/256/images/25/256_1/test'
+model_path = './saved_models/061'
+verbose = True
+batch_size = 2
+epochs = 3
+lr = 0.001
+warm_up_portion = 0.2
+weight_decay = 0
+momentum = 0.9
+log_interval = 10
+resume = ''
+iter = -1
+conductivity = 1
+device = 'ipu'
+device_iterations = 20
+replication_factor = 1
+gradient_accumulation = 10
+num_ipus = 4
+
+Pytorch version: 2.0.1+cpu
+
+weights: DEFAULT
+progress: True
+Found 1216 images in ./data/256/images/25/256_1/train/images
+Found 1216 outputs in ./data/256/images/25/256_1/train/conductivity.xlsx
+Found 152 images in ./data/256/images/25/256_1/test/images
+Found 152 outputs in ./data/256/images/25/256_1/test/conductivity.xlsx
+Using IPU.
+-------------------- Device Allocation --------------------
+self.features 0  --> IPU 0
+self.features 1  --> IPU 0
+self.features 2  --> IPU 0
+self.features 3  --> IPU 0
+self.features 4  --> IPU 0
+self.features 5  --> IPU 1
+self.features 6  --> IPU 2
+self.features 7  --> IPU 3
+AdaptiveAvgPool2d --> IPU 3
+Linear --> IPU 3
+EPOCH 1:
+LOSS train 0.06044789403676987
+Elapsed time: 452.2255 seconds
+EPOCH 2:
+LOSS train 0.015522345900535583
+Elapsed time: 3.9895 seconds
+EPOCH 3:
+LOSS train 0.06293939799070358
+Elapsed time: 3.9576 seconds
+python main.py --device ipu --batch_size 2 --device_iterations 20 --replication_factor 1 --gradient_accumulation 20 --num_ipus 4
+Logging to ./logs/2024-02-22-15-52-50-608575
+*********************** TRAIN BEGIN ***********************
+
+data_dir = './data/256/images/25/256_1/train'
+test_dir = './data/256/images/25/256_1/test'
+model_path = './saved_models/061'
+verbose = True
+batch_size = 2
+epochs = 3
+lr = 0.001
+warm_up_portion = 0.2
+weight_decay = 0
+momentum = 0.9
+log_interval = 10
+resume = ''
+iter = -1
+conductivity = 1
+device = 'ipu'
+device_iterations = 20
+replication_factor = 1
+gradient_accumulation = 20
+num_ipus = 4
+
+Pytorch version: 2.0.1+cpu
+
+weights: DEFAULT
+progress: True
+Found 1216 images in ./data/256/images/25/256_1/train/images
+Found 1216 outputs in ./data/256/images/25/256_1/train/conductivity.xlsx
+Found 152 images in ./data/256/images/25/256_1/test/images
+Found 152 outputs in ./data/256/images/25/256_1/test/conductivity.xlsx
+Using IPU.
+-------------------- Device Allocation --------------------
+self.features 0  --> IPU 0
+self.features 1  --> IPU 0
+self.features 2  --> IPU 0
+self.features 3  --> IPU 0
+self.features 4  --> IPU 0
+self.features 5  --> IPU 1
+self.features 6  --> IPU 2
+self.features 7  --> IPU 3
+AdaptiveAvgPool2d --> IPU 3
+Linear --> IPU 3
+EPOCH 1:
+LOSS train 0.17875027656555176
+Elapsed time: 446.8504 seconds
+EPOCH 2:
+LOSS train 0.0784514993429184
+Elapsed time: 2.4051 seconds
+EPOCH 3:
+LOSS train 0.0819806456565857
+Elapsed time: 2.3456 seconds
+python main.py --device ipu --batch_size 2 --device_iterations 20 --replication_factor 1 --gradient_accumulation 40 --num_ipus 4
+Logging to ./logs/2024-02-22-16-00-37-974399
+*********************** TRAIN BEGIN ***********************
+
+data_dir = './data/256/images/25/256_1/train'
+test_dir = './data/256/images/25/256_1/test'
+model_path = './saved_models/061'
+verbose = True
+batch_size = 2
+epochs = 3
+lr = 0.001
+warm_up_portion = 0.2
+weight_decay = 0
+momentum = 0.9
+log_interval = 10
+resume = ''
+iter = -1
+conductivity = 1
+device = 'ipu'
+device_iterations = 20
+replication_factor = 1
+gradient_accumulation = 40
+num_ipus = 4
+
+Pytorch version: 2.0.1+cpu
+
+weights: DEFAULT
+progress: True
+Found 1216 images in ./data/256/images/25/256_1/train/images
+Found 1216 outputs in ./data/256/images/25/256_1/train/conductivity.xlsx
+Found 152 images in ./data/256/images/25/256_1/test/images
+Found 152 outputs in ./data/256/images/25/256_1/test/conductivity.xlsx
+Using IPU.
+-------------------- Device Allocation --------------------
+self.features 0  --> IPU 0
+self.features 1  --> IPU 0
+self.features 2  --> IPU 0
+self.features 3  --> IPU 0
+self.features 4  --> IPU 0
+self.features 5  --> IPU 1
+self.features 6  --> IPU 2
+self.features 7  --> IPU 3
+AdaptiveAvgPool2d --> IPU 3
+Linear --> IPU 3
+EPOCH 1:
+LOSS train inf
+Elapsed time: 0.0009 seconds
+EPOCH 2:
+LOSS train inf
+Elapsed time: 0.0003 seconds
+EPOCH 3:
+LOSS train inf
+Elapsed time: 0.0003 seconds
+python main.py --device ipu --batch_size 2 --device_iterations 20 --replication_factor 1 --gradient_accumulation 60 --num_ipus 4
+Logging to ./logs/2024-02-22-16-00-40-944955
+*********************** TRAIN BEGIN ***********************
+
+data_dir = './data/256/images/25/256_1/train'
+test_dir = './data/256/images/25/256_1/test'
+model_path = './saved_models/061'
+verbose = True
+batch_size = 2
+epochs = 3
+lr = 0.001
+warm_up_portion = 0.2
+weight_decay = 0
+momentum = 0.9
+log_interval = 10
+resume = ''
+iter = -1
+conductivity = 1
+device = 'ipu'
+device_iterations = 20
+replication_factor = 1
+gradient_accumulation = 60
+num_ipus = 4
+
+Pytorch version: 2.0.1+cpu
+
+weights: DEFAULT
+progress: True
+Found 1216 images in ./data/256/images/25/256_1/train/images
+Found 1216 outputs in ./data/256/images/25/256_1/train/conductivity.xlsx
+Found 152 images in ./data/256/images/25/256_1/test/images
+Found 152 outputs in ./data/256/images/25/256_1/test/conductivity.xlsx
+Using IPU.
+-------------------- Device Allocation --------------------
+self.features 0  --> IPU 0
+self.features 1  --> IPU 0
+self.features 2  --> IPU 0
+self.features 3  --> IPU 0
+self.features 4  --> IPU 0
+self.features 5  --> IPU 1
+self.features 6  --> IPU 2
+self.features 7  --> IPU 3
+AdaptiveAvgPool2d --> IPU 3
+Linear --> IPU 3
+EPOCH 1:
+LOSS train inf
+Elapsed time: 0.0009 seconds
+EPOCH 2:
+LOSS train inf
+Elapsed time: 0.0003 seconds
+EPOCH 3:
+LOSS train inf
+Elapsed time: 0.0003 seconds
+python main.py --device ipu --batch_size 2 --device_iterations 20 --replication_factor 1 --gradient_accumulation 10 --num_ipus 8
+Logging to ./logs/2024-02-22-16-00-43-915582
+*********************** TRAIN BEGIN ***********************
+
+data_dir = './data/256/images/25/256_1/train'
+test_dir = './data/256/images/25/256_1/test'
+model_path = './saved_models/061'
+verbose = True
+batch_size = 2
+epochs = 3
+lr = 0.001
+warm_up_portion = 0.2
+weight_decay = 0
+momentum = 0.9
+log_interval = 10
+resume = ''
+iter = -1
+conductivity = 1
+device = 'ipu'
+device_iterations = 20
+replication_factor = 1
+gradient_accumulation = 10
+num_ipus = 8
+
+Pytorch version: 2.0.1+cpu
+
+weights: DEFAULT
+progress: True
+Found 1216 images in ./data/256/images/25/256_1/train/images
+Found 1216 outputs in ./data/256/images/25/256_1/train/conductivity.xlsx
+Found 152 images in ./data/256/images/25/256_1/test/images
+Found 152 outputs in ./data/256/images/25/256_1/test/conductivity.xlsx
+Using IPU.
+-------------------- Device Allocation --------------------
+self.features 0  --> IPU 0
+self.features 1  --> IPU 1
+self.features 2  --> IPU 2
+self.features 3  --> IPU 3
+self.features 4  --> IPU 4
+self.features 5  --> IPU 5
+self.features 6  --> IPU 6
+self.features 7  --> IPU 7
+AdaptiveAvgPool2d --> IPU 7
+Linear --> IPU 7
+EPOCH 1:
+Elapsed time: 6.7162 seconds
+python main.py --device ipu --batch_size 2 --device_iterations 20 --replication_factor 1 --gradient_accumulation 20 --num_ipus 8
+Logging to ./logs/2024-02-22-16-00-53-743050
+*********************** TRAIN BEGIN ***********************
+
+data_dir = './data/256/images/25/256_1/train'
+test_dir = './data/256/images/25/256_1/test'
+model_path = './saved_models/061'
+verbose = True
+batch_size = 2
+epochs = 3
+lr = 0.001
+warm_up_portion = 0.2
+weight_decay = 0
+momentum = 0.9
+log_interval = 10
+resume = ''
+iter = -1
+conductivity = 1
+device = 'ipu'
+device_iterations = 20
+replication_factor = 1
+gradient_accumulation = 20
+num_ipus = 8
+
+Pytorch version: 2.0.1+cpu
+
+weights: DEFAULT
+progress: True
+Found 1216 images in ./data/256/images/25/256_1/train/images
+Found 1216 outputs in ./data/256/images/25/256_1/train/conductivity.xlsx
+Found 152 images in ./data/256/images/25/256_1/test/images
+Found 152 outputs in ./data/256/images/25/256_1/test/conductivity.xlsx
+Using IPU.
+-------------------- Device Allocation --------------------
+self.features 0  --> IPU 0
+self.features 1  --> IPU 1
+self.features 2  --> IPU 2
+self.features 3  --> IPU 3
+self.features 4  --> IPU 4
+self.features 5  --> IPU 5
+self.features 6  --> IPU 6
+self.features 7  --> IPU 7
+AdaptiveAvgPool2d --> IPU 7
+Linear --> IPU 7
+EPOCH 1:
+LOSS train 0.06378893554210663
+Elapsed time: 541.0461 seconds
+EPOCH 2:
+LOSS train 0.13129951059818268
+Elapsed time: 2.3831 seconds
+EPOCH 3:
+LOSS train 0.058810487389564514
+Elapsed time: 2.3083 seconds
+python main.py --device ipu --batch_size 2 --device_iterations 20 --replication_factor 1 --gradient_accumulation 40 --num_ipus 8
+Logging to ./logs/2024-02-22-16-10-17-962440
+*********************** TRAIN BEGIN ***********************
+
+data_dir = './data/256/images/25/256_1/train'
+test_dir = './data/256/images/25/256_1/test'
+model_path = './saved_models/061'
+verbose = True
+batch_size = 2
+epochs = 3
+lr = 0.001
+warm_up_portion = 0.2
+weight_decay = 0
+momentum = 0.9
+log_interval = 10
+resume = ''
+iter = -1
+conductivity = 1
+device = 'ipu'
+device_iterations = 20
+replication_factor = 1
+gradient_accumulation = 40
+num_ipus = 8
+
+Pytorch version: 2.0.1+cpu
+
+weights: DEFAULT
+progress: True
+Found 1216 images in ./data/256/images/25/256_1/train/images
+Found 1216 outputs in ./data/256/images/25/256_1/train/conductivity.xlsx
+Found 152 images in ./data/256/images/25/256_1/test/images
+Found 152 outputs in ./data/256/images/25/256_1/test/conductivity.xlsx
+Using IPU.
+-------------------- Device Allocation --------------------
+self.features 0  --> IPU 0
+self.features 1  --> IPU 1
+self.features 2  --> IPU 2
+self.features 3  --> IPU 3
+self.features 4  --> IPU 4
+self.features 5  --> IPU 5
+self.features 6  --> IPU 6
+self.features 7  --> IPU 7
+AdaptiveAvgPool2d --> IPU 7
+Linear --> IPU 7
+EPOCH 1:
+LOSS train inf
+Elapsed time: 0.0009 seconds
+EPOCH 2:
+LOSS train inf
+Elapsed time: 0.0003 seconds
+EPOCH 3:
+LOSS train inf
+Elapsed time: 0.0003 seconds
+python main.py --device ipu --batch_size 2 --device_iterations 20 --replication_factor 1 --gradient_accumulation 60 --num_ipus 8
+Logging to ./logs/2024-02-22-16-10-21-034703
+*********************** TRAIN BEGIN ***********************
+
+data_dir = './data/256/images/25/256_1/train'
+test_dir = './data/256/images/25/256_1/test'
+model_path = './saved_models/061'
+verbose = True
+batch_size = 2
+epochs = 3
+lr = 0.001
+warm_up_portion = 0.2
+weight_decay = 0
+momentum = 0.9
+log_interval = 10
+resume = ''
+iter = -1
+conductivity = 1
+device = 'ipu'
+device_iterations = 20
+replication_factor = 1
+gradient_accumulation = 60
+num_ipus = 8
+
+Pytorch version: 2.0.1+cpu
+
+weights: DEFAULT
+progress: True
+Found 1216 images in ./data/256/images/25/256_1/train/images
+Found 1216 outputs in ./data/256/images/25/256_1/train/conductivity.xlsx
+Found 152 images in ./data/256/images/25/256_1/test/images
+Found 152 outputs in ./data/256/images/25/256_1/test/conductivity.xlsx
+Using IPU.
+-------------------- Device Allocation --------------------
+self.features 0  --> IPU 0
+self.features 1  --> IPU 1
+self.features 2  --> IPU 2
+self.features 3  --> IPU 3
+self.features 4  --> IPU 4
+self.features 5  --> IPU 5
+self.features 6  --> IPU 6
+self.features 7  --> IPU 7
+AdaptiveAvgPool2d --> IPU 7
+Linear --> IPU 7
+EPOCH 1:
+LOSS train inf
+Elapsed time: 0.0009 seconds
+EPOCH 2:
+LOSS train inf
+Elapsed time: 0.0003 seconds
+EPOCH 3:
+LOSS train inf
+Elapsed time: 0.0003 seconds
