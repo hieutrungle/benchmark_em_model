@@ -16,6 +16,7 @@ import training
 from torch.utils.data.dataloader import default_collate
 import timer
 
+import torch.nn as nn
 import torch.multiprocessing as mp
 from torch.utils.data.distributed import DistributedSampler
 from torch.nn.parallel import DistributedDataParallel as DDP
@@ -116,16 +117,8 @@ def main():
     # create model
     kwargs = {"device": args.device}
     model = efficientnet.efficientnet_prediction_model(num_classes=1, **kwargs)
+    model = model.to("cpu")
 
-    if DEVICE.type == "cuda" and NUM_GPUS > 0:
-        model = model.to("cuda")
-    else:
-        model = model.to("cpu")
-
-    # Data Preparation
-    # normalize = transforms.Normalize(
-    #     mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]
-    # )
     train_dir = args.data_dir
     train_ds = data_io.ImageCurrentDataset(
         train_dir,
@@ -220,6 +213,14 @@ def main():
             pin_memory=False,
             drop_last=False,
         )
+
+        # multiple GPUs
+        if torch.cuda.device_count() > 1:
+            world_rank = torch.distributed.get_rank()
+            print("Let's use", torch.cuda.device_count(), "GPUs!")
+            # dim = 0 [30, xxx] -> [10, ...], [10, ...], [10, ...] on 3 GPUs
+            model = nn.DataParallel(model)
+        model = model.to("cuda:0")
 
         with timer.Timer(logger_fn=logger.log):
             for i, data in enumerate(train_loader):
