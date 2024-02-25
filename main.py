@@ -149,7 +149,7 @@ def run_ipu(args):
         dataset=train_ds,
         batch_size=args.batch_size,
         shuffle=True,
-        drop_last=True,
+        drop_last=False,
     )
     test_loader = poptorch.DataLoader(
         options=training_opts,
