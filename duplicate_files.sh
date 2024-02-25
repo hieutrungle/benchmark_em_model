@@ -1,7 +1,7 @@
 n=10000
 workdir=$(dirname $0)
 filedir=${workdir}/data/256/images/25/256_1/train/images
-all_files=$(ls ${filedir}/*)
+all_files=$(find ${filedir} -type f)
 
 for i in {1..19..1}; do
     for f in ${all_files};  do
