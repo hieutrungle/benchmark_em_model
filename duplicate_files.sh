@@ -1,11 +1,21 @@
 n=10000
+num_copies=4
 workdir=$(dirname $0)
-filedir=${workdir}/tmp
+filedir=${workdir}/data/256/images/25/256_1/train/images
+all_files=$(ls ${filedir}/*)
 
-for f in ${filedir}/*;  do
-    filename=$(basename "$f")
-    filename="${filename%.*}"
-    ext="${f##*.}"
-    cp -p "$f" ${filedir}/"$filename"_${n}.${ext}
-    n=$((n+1))
+for i in {1..5..1}; do
+    for f in ${all_files};  do
+        filename=$(basename "$f")
+        filename="${filename%.*}"
+        filename=$(echo $filename | sed 's/[0-9]*$//' | sed 's/_$//')
+        ext="${f##*.}"
+
+        while [[ "${filename}${n}.${ext}" == "$(basename "$f")" ]]; do
+            n=$((n+1))
+        done
+        
+        cp -p "$f" ${filedir}/"$filename"${n}.${ext}
+        n=$((n+1))
+    done
 done
