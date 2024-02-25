@@ -315,7 +315,8 @@ def main():
         return
     else:
         logger.log("Using CUDA and compiling model.")
-        world_size = torch.cuda.device_count()
+        num_devices = min(args.num_devices, torch.cuda.device_count())
+        world_size = num_devices
         logger.log(f"World size: {world_size}")
         processes = []
         mp.set_start_method("spawn")
@@ -353,6 +354,7 @@ def create_argparser():
         replication_factor=1,
         gradient_accumulation=1,
         num_ipus=1,
+        num_devices=1,
     )
     parser = argparse.ArgumentParser()
     utils.add_dict_to_argparser(parser, defaults)
