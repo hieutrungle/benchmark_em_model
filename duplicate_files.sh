@@ -3,7 +3,7 @@ workdir=$(dirname $0)
 filedir=${workdir}/data/256/images/25/256_1/train/images
 all_files=$(ls ${filedir}/*)
 
-for i in {1..3..1}; do
+for i in {1..19..1}; do
     for f in ${all_files};  do
         filename=$(basename "$f")
         filename="${filename%.*}"
