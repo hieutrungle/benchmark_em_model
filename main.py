@@ -241,7 +241,7 @@ def run_cuda(args, rank, world_size):
     model.to(device)
     # use if model contains batchnorm.
     model = nn.SyncBatchNorm.convert_sync_batchnorm(model)
-    model = torch.compile(model, fullgraph=True)
+    # model = torch.compile(model, fullgraph=True)
     model = DDP(model, device_ids=[rank], output_device=rank)
 
     optimizer = optim.AdamW(
