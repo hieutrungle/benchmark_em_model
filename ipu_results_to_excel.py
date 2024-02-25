@@ -19,7 +19,7 @@ if __name__ == "__main__":
     total_images_dict = {"total_images": []}
     throughput_dict = {"throughput (images/s)": []}
     epsilon = 1e-1
-    with open("ipu_results_rerun.txt", "r") as file:
+    with open("ipu_results_replicas.txt", "r") as file:
         # read lines
         lines = file.readlines()
         for i, line in enumerate(lines):
@@ -77,4 +77,4 @@ if __name__ == "__main__":
         **throughput_dict,
     }
     df = pd.DataFrame.from_dict(saved_dict)
-    df.to_excel("tmp_ipu_results_rerun.xlsx", index=True)
+    df.to_excel("tmp_ipu_results_replicas.xlsx", index=True)
