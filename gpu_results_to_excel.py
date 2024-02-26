@@ -48,6 +48,7 @@ if __name__ == "__main__":
     # from dict to dataframe
     saved_dict = {
         **batch_size_dict,
+        **num_devices_dict,
         **global_batch_size_dict,
         **total_images_dict,
         **time_dict,
