@@ -9,7 +9,7 @@ if __name__ == "__main__":
     time_count = 0
     total_images = 24320
     batch_size_dict = {"batch_size": []}
-    num_devices_dict = {"num_devices_dict": []}
+    num_devices_dict = {"num_devices": []}
     global_batch_size_dict = {"global_batch_size": []}
     time_dict = {"time (s)": []}
     total_images_dict = {"total_images": []}
@@ -37,7 +37,7 @@ if __name__ == "__main__":
             if time_count == 3:
                 batch_size = global_batch_size // num_devices
                 batch_size_dict["batch_size"].append(batch_size)
-                num_devices_dict["num_devices_dict"].append(num_devices)
+                num_devices_dict["num_devices"].append(num_devices)
                 global_batch_size_dict["global_batch_size"].append(global_batch_size)
                 total_images_dict["total_images"].append(total_images)
                 time_dict["time (s)"].append(time)
