@@ -16,7 +16,7 @@ if __name__ == "__main__":
     throughput_dict = {"throughput (images/s)": []}
     epsilon = 1e-1
     with open(
-        "/scratch/user/hieult/research/benchmark_em_model/logs/out.540076-benchmark_no_compile_bs_200_gpu_2-00",
+        "/scratch/user/hieult/research/benchmark_em_model/logs/out.540160-benchmark_no_compile_gpu_4-00",
         "r",
     ) as file:
         # read lines
@@ -56,6 +56,6 @@ if __name__ == "__main__":
     }
     df = pd.DataFrame.from_dict(saved_dict)
     df.to_excel(
-        "./gpu_results.xlsx",
+        "./gpu_4_results.xlsx",
         index=True,
     )
