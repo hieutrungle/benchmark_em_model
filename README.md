@@ -1,16 +1,22 @@
 ## Data Dir
 
 data
-└── 256
-└── images
-└── 25
-└── 256_1
-├── test
-│ ├── images
-│ └── labels
-└── train
-├── images
-└── labels
+│ ├── 256
+│ │ ├── images
+│ │ │ ├── 25
+│ │ │ │ ├── 256_1
+│ │ │ │ │ ├── test
+│ │ │ │ │ │ ├── images
+│ │ │ │ │ │ │ ├── 0.jpg
+│ │ │ │ │ │ │ ├── 1.jpg
+│ │ │ │ │ │ │ ├── ...
+│ │ │ │ │ │ ├── conductivity.xlsx
+│ │ │ │ │ ├── train
+│ │ │ │ │ │ ├── images
+│ │ │ │ │ │ │ ├── 0.jpg
+│ │ │ │ │ │ │ ├── 1.jpg
+│ │ │ │ │ │ │ ├── ...
+│ │ │ │ │ │ ├── conductivity.xlsx
 
 ## Duplicate files
 
