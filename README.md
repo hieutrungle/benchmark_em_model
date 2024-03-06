@@ -1,5 +1,6 @@
 ## Data Dir
 
+```bash
 data
 │ ├── 256
 │ │ ├── images
@@ -17,6 +18,7 @@ data
 │ │ │ │ │ │ │ ├── 1.jpg
 │ │ │ │ │ │ │ ├── ...
 │ │ │ │ │ │ ├── conductivity.xlsx
+```
 
 ## Duplicate files
 
