@@ -1,3 +1,11 @@
+## Duplicate files
+
+The dataset is relatively small, so we can duplicate the images to increase the size of the dataset. The script `duplicate_files.sh` duplicates the images in the `data/256/images/25/256_1/train/images` directory. The script can be run with the following command:
+
+```bash
+bash ./duplicate_files.sh
+```
+
 ## Python Run with GPUs
 
 1 GPU:

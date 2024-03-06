@@ -1,5 +1,7 @@
 n=10000
 workdir=$(dirname $0)
+
+# directory to duplicate files
 filedir=${workdir}/data/256/images/25/256_1/train/images
 all_files=$(find ${filedir} -type f)
 
